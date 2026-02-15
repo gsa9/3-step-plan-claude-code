@@ -1,8 +1,12 @@
 # 3-step-plan-claude-code
 
-A token-efficient planning workflow for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Three steps — Decide, Plan, Execute — each producing a lightweight artifact so you can clear context before the next, giving the LLM a clean window for better performance at lower token cost. In the first step, Claude drives structured Q&A that challenges your assumptions, pushes back on risky choices, and discovers new questions as your answers reshape the problem. I run Claude Code with `bypassPermissions` mode enabled, which skips all permission prompts and lets Claude work autonomously. **Use with caution:** this setting allows Claude to modify files and execute commands without approval.
+Decide → Plan → Execute skills for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Each step produces a lightweight artifact so you can `/clear` context and start the next step fresh — better performance, lower token cost (see [Hotkeys](#hotkeys) to automate this).
 
-This repo intentionally excludes `settings.json` to avoid overwriting your existing configuration. If you want to enable bypass mode, add to your `~/.claude/settings.json`:
+- **Step 1** — structured Q&A where Claude challenges your assumptions, pushes back on risky choices, and discovers new questions as your answers reshape the problem. Writes `_step1_decisions.md`
+- **Step 2** — reads the decisions file in a fresh window, transforms them into parallelism-maximized phases with dependencies, guardrails, and file-level context. Writes `_step2_plan.md`
+- **Step 3** — reads the plan file in a fresh window, dispatches phases to subagents while the main context stays lean
+
+I run Claude Code with `bypassPermissions` mode enabled, which skips all permission prompts and lets Claude work autonomously. **Use with caution:** this setting allows Claude to modify files and execute commands without approval. This repo intentionally excludes `settings.json` to avoid overwriting your existing configuration. If you want to enable bypass mode, add to your `~/.claude/settings.json`:
 ```json
 {
   "permissions": {
