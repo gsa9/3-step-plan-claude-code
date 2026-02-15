@@ -1,6 +1,6 @@
 # 3-step-plan-claude-code
 
-A planning-first workflow for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) that breaks complex tasks into decisions, plans, and parallel execution — each in a fresh session, connected only by lightweight artifacts. I run Claude Code with `bypassPermissions` mode enabled, which skips all permission prompts and lets Claude work autonomously. **Use with caution:** this setting allows Claude to modify files and execute commands without approval.
+A token-efficient planning workflow for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Three steps — Decide, Plan, Execute — each producing a lightweight artifact so you can clear context before the next, giving the LLM a clean window for better performance at lower token cost. In the first step, Claude drives structured Q&A that challenges your assumptions, pushes back on risky choices, and discovers new questions as your answers reshape the problem. I run Claude Code with `bypassPermissions` mode enabled, which skips all permission prompts and lets Claude work autonomously. **Use with caution:** this setting allows Claude to modify files and execute commands without approval.
 
 This repo intentionally excludes `settings.json` to avoid overwriting your existing configuration. If you want to enable bypass mode, add to your `~/.claude/settings.json`:
 ```json
