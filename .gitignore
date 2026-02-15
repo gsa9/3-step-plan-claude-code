@@ -1,0 +1,29 @@
+# Ignore everything
+*
+
+# Except these specific files only
+!.gitignore
+!README.md
+!LICENSE
+!CLAUDE.md
+
+# skills - step1, step2, step3, trim, gc
+!skills/
+!skills/step1/
+!skills/step1/**
+!skills/step2/
+!skills/step2/**
+!skills/step3/
+!skills/step3/**
+!skills/trim/
+!skills/trim/**
+!skills/gc/
+!skills/gc/**
+
+# hooks
+!hooks/
+!hooks/**
+
+# hotkeys
+!hotkeys/
+!hotkeys/**
