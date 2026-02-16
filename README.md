@@ -733,11 +733,13 @@ One keypress per stage — no manual clearing between steps.
 **Setup:**
 
 1. Install [AutoHotkey v2](https://www.autohotkey.com/) (v2.0+)
-2. Copy `hotkeys/3step-hotkeys.ahk` to your Startup folder so it runs on login:
-   ```
-   %APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup
-   ```
-   Open this folder quickly with <kbd>Win+R</kbd> → `shell:startup` → Enter.
+2. Create a shortcut to `hotkeys/3step-hotkeys.ahk` and place it in your Startup folder so it runs on login:
+   - Right-click the `.ahk` file → **Create shortcut**
+   - Move the shortcut to your Startup folder:
+     ```
+     %APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup
+     ```
+     Open this folder quickly with <kbd>Win+R</kbd> → `shell:startup` → Enter.
 3. Double-click the script (or restart) to activate.
 
 **Notes:**
