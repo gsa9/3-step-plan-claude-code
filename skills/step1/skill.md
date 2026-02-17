@@ -60,6 +60,7 @@ Ask: "Want to revisit any of these, or move on?" If flagged, convert to regular 
 
 **Early resolution** — ONLY when outcome is a single localized fix (one file, no conventions, no docs):
 - Skip `_step1_decisions.md`, summarize inline. Simple enough to implement directly — no pipeline needed.
+- After the summary, ask: "Ready to implement? I can do this directly." Do NOT suggest `/step2` — early resolution bypasses the pipeline entirely.
 - Question count is irrelevant. 1 human question + multi-file scope = full bridge.
 
 **Full bridge** — default path (multi-file, conventions, or docs):
