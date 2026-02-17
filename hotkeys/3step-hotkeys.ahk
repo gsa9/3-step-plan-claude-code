@@ -3,7 +3,7 @@
 
 ; 3-Step Plan Skills hotkeys for Windows Terminal
 ; ClearAndCmd: escapes vim mode, clears context, then runs skill in fresh session
-; ClearAndEnter: escapes vim mode, runs command in current session
+; EscAndEnter: escapes vim mode, runs command in current session
 
 ClearAndCmd(cmd) {
     Send("{Esc}")
@@ -19,7 +19,7 @@ ClearAndCmd(cmd) {
     Send("{Enter}")
 }
 
-ClearAndEnter(cmd) {
+EscAndEnter(cmd) {
     Send("{Esc}")
     Sleep(200)
     Send("i")
@@ -30,8 +30,8 @@ ClearAndEnter(cmd) {
 }
 
 #HotIf WinActive("ahk_exe WindowsTerminal.exe")
-^h::ClearAndEnter("/gc")
-^m::ClearAndEnter("/clear")
+^h::EscAndEnter(" /gc")
+^m::EscAndEnter("/clear")
 ^1::SendText(" /step1 ")
 ^2::ClearAndCmd("/step2")
 ^3::ClearAndCmd("/step3")
