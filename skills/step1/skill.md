@@ -25,7 +25,11 @@ Structured Q&A that converges on decisions. Questions evolve based on answers.
 
 One question at a time via `AskUserQuestion`.
 
-**Auto-decide** when codebase evidence makes one option overwhelmingly correct. Present initial auto-decisions as a batch before the first human question:
+**Auto-decide** when:
+- Codebase evidence makes one option overwhelmingly correct
+- LLM-readability clearly favors one option (naming, structure, indirection) — still ask, but put the best option first with `(Recommended)` and include the rationale so the user can confirm quickly
+
+Present initial auto-decisions as a batch before the first human question:
 
 ```
 ### Auto-decided (review before we continue)
@@ -86,3 +90,4 @@ Ask: "Want to revisit any of these, or move on?" If flagged, convert to regular 
 - One question at a time. Never batch.
 - Never auto-chain to `/step2`.
 - Recommend, warn, push back, challenge.
+- **Take sides.** When one option is obviously better for LLM development (explicit names, less indirection, flatter structure), lead with it as `(Recommended)` with rationale. Still ask — but make the right choice effortless to confirm.
