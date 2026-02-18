@@ -4,11 +4,11 @@ const fs = require('fs');
 const https = require('https');
 const path = require('path');
 
-const RESET     = '\x1b[0m';
-const COLOR     = '\x1b[38;5;241m';
-const COLOR_DIM = '\x1b[2;38;5;241m';
-const FILLED    = '\u2588';
-const EMPTY     = '\u2591';
+const RESET       = '\x1b[0m';
+const COLOR       = '\x1b[38;5;241m';
+const COLOR_FILLED = '\x1b[38;5;250m';
+const FILLED       = '\u2501';
+const EMPTY        = '\u2508';
 const BAR_WIDTH = 10;
 const SEP       = '     ';
 
@@ -32,13 +32,13 @@ process.stdin.on('end', async () => {
       buildModel(data),
       buildFolder(data),
     ];
-    process.stdout.write(elements.filter(Boolean).join(COLOR_DIM + SEP + RESET));
+    process.stdout.write(elements.filter(Boolean).join(COLOR + SEP + RESET));
   } catch (_) { /* statusline must never crash */ }
 });
 
 function renderBar(pct) {
   const filled = Math.max(0, Math.min(BAR_WIDTH, Math.round(pct / 100 * BAR_WIDTH)));
-  return FILLED.repeat(filled) + EMPTY.repeat(BAR_WIDTH - filled);
+  return COLOR_FILLED + FILLED.repeat(filled) + RESET + EMPTY.repeat(BAR_WIDTH - filled);
 }
 
 async function getQuota() {
@@ -102,11 +102,11 @@ function buildQuotaBar(period) {
     else if (secs < 86400) timeStr = (secs / 3600).toFixed(1) + 'h';
     else                   timeStr = (secs / 86400).toFixed(1) + 'd';
   }
-  return COLOR_DIM + renderBar(period.utilization || 0) + ' ' + timeStr + RESET;
+  return COLOR + renderBar(period.utilization || 0) + ' ' + timeStr + RESET;
 }
 
 function buildModel(data) {
-  return COLOR_DIM + (data.model?.display_name || 'Claude').replace(/^Claude\s+/i, '') + RESET;
+  return COLOR + (data.model?.display_name || 'Claude').replace(/^Claude\s+/i, '') + RESET;
 }
 
 function buildFolder(data) {

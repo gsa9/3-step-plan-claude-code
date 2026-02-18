@@ -754,9 +754,9 @@ One keypress per stage — no manual clearing between steps.
 
 `hooks/statusline.js` displays context window usage, API quota utilization (5-hour and 7-day with time until reset), current model, and working directory:
 ```
-███░░░░░░░      ███░░░░░░░ 48m     ██░░░░░░░░ 2.8d     Opus 4.6     project
+━━━━━━┈┈┈┈      ━━━━━━┈┈┈┈ 48m     ━━┈┈┈┈┈┈┈┈ 2.8d     Opus 4.6     project
 ```
-Quota data is fetched from the Anthropic OAuth usage API with a 30-second cache. Time remaining adapts units automatically: minutes under 1h, hours under 1d, days otherwise. All muted gray — intentionally subtle.
+Quota data is fetched from the Anthropic OAuth usage API with a 30-second cache. Time remaining adapts units automatically: minutes under 1h, hours under 1d, days otherwise. Filled segments use light gray, empty segments use a dotted line — intentionally subtle.
 
 Enable in `settings.json`:
 ```json
