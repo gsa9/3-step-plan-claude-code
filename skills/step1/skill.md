@@ -83,6 +83,7 @@ Ask: "Want to revisit any of these, or move on?" If flagged, convert to regular 
 `Rejected` and `Risks` exist so /step2 can convert them into guardrails. One line each. Omit if genuinely empty.
 2. Ask "Anything you'd change?" — apply changes if requested.
 3. **Write `_step1_decisions.md`** at repo root. This is the primary deliverable. Never skip it on the full bridge path.
+4. End with: `Next: /step2 to plan the implementation.`
 
 ## Rules
 

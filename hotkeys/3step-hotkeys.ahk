@@ -13,7 +13,7 @@ ClearAndCmd(cmd) {
     SendText("/clear")
     Sleep(200)
     Send("{Enter}")
-    Sleep(1500)
+    Sleep(2500)
     SendText(cmd)
     Sleep(200)
     Send("{Enter}")

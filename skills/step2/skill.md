@@ -156,6 +156,7 @@ Plan created: _step2_plan.md
 - Phases: N (M can run in parallel)
 - Parallel groups: N
 - Est. dispatch sizes: all within budget / Phase X may be tight
+Next: /step3 to execute.
 ```
 
 ## Lifecycle
