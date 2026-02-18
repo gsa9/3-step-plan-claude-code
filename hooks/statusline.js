@@ -27,8 +27,8 @@ process.stdin.on('end', async () => {
     const quota = await getQuota();
     const elements = [
       buildContextBar(data),
-      buildQuotaBar(quota?.five_hour),
-      buildQuotaBar(quota?.seven_day),
+      buildQuotaBar(quota?.five_hour, 5 * 3600),
+      buildQuotaBar(quota?.seven_day, 7 * 86400),
       buildModel(data),
       buildFolder(data),
     ];
@@ -93,7 +93,7 @@ function buildContextBar(data) {
   return COLOR + renderBar(100 - remaining) + ' ' + RESET;
 }
 
-function buildQuotaBar(period) {
+function buildQuotaBar(period, windowSecs) {
   if (!period) return '';
   const secs = period.resets_at ? (new Date(period.resets_at) - Date.now()) / 1000 : 0;
   let timeStr = '';
@@ -102,7 +102,11 @@ function buildQuotaBar(period) {
     else if (secs < 86400) timeStr = (secs / 3600).toFixed(1) + 'h';
     else                   timeStr = (secs / 86400).toFixed(1) + 'd';
   }
-  return COLOR + renderBar(period.utilization || 0) + ' ' + timeStr + RESET;
+  const elapsed = windowSecs - Math.max(0, secs);
+  const projected = (elapsed > 0 && period.utilization > 0)
+    ? Math.round(period.utilization / elapsed * windowSecs)
+    : (period.utilization || 0);
+  return COLOR + renderBar(projected) + ' ' + timeStr + RESET;
 }
 
 function buildModel(data) {
