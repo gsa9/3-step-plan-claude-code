@@ -23,6 +23,7 @@
 # hooks
 !hooks/
 !hooks/**
+hooks/quota-cache.json
 
 # hotkeys
 !hotkeys/
