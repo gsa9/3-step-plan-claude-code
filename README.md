@@ -752,13 +752,13 @@ One keypress per stage — no manual clearing between steps.
 
 ### Status Line
 
-`hooks/statusline.js` displays context window usage (percentage + bar), working directory, projected quota utilization (5-hour and 7-day with time until reset), and current model:
+`hooks/statusline.js` displays context usage, working directory, quota projections, and model:
 ```
-━━━━━━┈┈ 12%    project     ━━━━━━┈┈ 48m    ━━┈┈┈┈┈┈ 2.8d    Opus 4.6
+▰▰▰▰▰▰▱▱ 12%    project     ▰▰▰▰▰▰▱▱ 48m    ▰▰▱▱▱▱▱▱ 2.8d    Opus 4.6
 ```
-Quota data is fetched from the Anthropic OAuth usage API with a 30-second cache. Time remaining adapts units automatically: minutes under 1h, hours under 1d, days otherwise. The context bar shows used percentage after the bar graph. Filled segments use default text color, empty segments use a dotted outline. Quota bars turn orange when projected usage reaches 90%+.
+Left to right: context bar (used % after bar), folder name, 5-hour quota with time remaining, 7-day quota with time remaining, model name. Filled segments (▰) use default text color, empty use outline (▱). Time adapts units: minutes (<1h), hours (<1d), days. Quota data from Anthropic OAuth API with 30s cache.
 
-**Projected usage, not current:** The quota bars show where you're heading, not where you are. The bar extrapolates current consumption rate across the full window — if you've used 20% in the first hour of a 5-hour window, it projects 100% (on pace to exhaust). A projected bar at 90% turns orange — an immediate signal to slow down.
+**Quota bars are two-tone.** Each bar has three zones: actual usage (default color), projected overshoot (orange), and remaining (outline). The projection asks: "at this rate of consumption, where will I be when the window ends?" — `rate = actual ÷ elapsed`, then `projected = rate × window`. Example: 20% used 1h into a 5h window → rate is 20%/h → projected 100% by window end. The orange zone fills the gap between actual and projected, giving an at-a-glance pace warning.
 
 Enable in `settings.json`:
 ```json
