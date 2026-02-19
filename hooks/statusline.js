@@ -7,10 +7,12 @@ const path = require('path');
 const RESET       = '\x1b[0m';
 const COLOR       = '\x1b[38;5;241m';
 const COLOR_FILLED = '\x1b[38;5;250m';
+const COLOR_WARN   = '\x1b[38;5;208m';
+const WARN_THRESHOLD = 90;
 const FILLED       = '\u2501';
 const EMPTY        = '\u2508';
 const BAR_WIDTH = 10;
-const SEP       = '     ';
+const SEP       = '    ';
 
 const CLAUDE_DIR       = path.join(os.homedir(), '.claude');
 const CREDENTIALS_FILE = path.join(CLAUDE_DIR, '.credentials.json');
@@ -27,18 +29,19 @@ process.stdin.on('end', async () => {
     const quota = await getQuota();
     const elements = [
       buildContextBar(data),
-      buildQuotaBar(quota?.five_hour, 5 * 3600),
-      buildQuotaBar(quota?.seven_day, 7 * 86400),
       buildModel(data),
       buildFolder(data),
+      buildQuotaBar(quota?.five_hour, 5 * 3600),
+      buildQuotaBar(quota?.seven_day, 7 * 86400),
     ];
     process.stdout.write(elements.filter(Boolean).join(COLOR + SEP + RESET));
   } catch (_) { /* statusline must never crash */ }
 });
 
-function renderBar(pct) {
+function renderBar(pct, warn) {
   const filled = Math.max(0, Math.min(BAR_WIDTH, Math.round(pct / 100 * BAR_WIDTH)));
-  return COLOR_FILLED + FILLED.repeat(filled) + RESET + EMPTY.repeat(BAR_WIDTH - filled);
+  const color = (warn && pct >= WARN_THRESHOLD) ? COLOR_WARN : COLOR_FILLED;
+  return color + FILLED.repeat(filled) + RESET + EMPTY.repeat(BAR_WIDTH - filled);
 }
 
 async function getQuota() {
@@ -106,7 +109,7 @@ function buildQuotaBar(period, windowSecs) {
   const projected = (elapsed > 0 && period.utilization > 0)
     ? Math.round(period.utilization / elapsed * windowSecs)
     : (period.utilization || 0);
-  return COLOR + renderBar(projected) + ' ' + timeStr + RESET;
+  return COLOR + renderBar(projected, true) + ' ' + timeStr + RESET;
 }
 
 function buildModel(data) {

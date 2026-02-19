@@ -752,13 +752,13 @@ One keypress per stage — no manual clearing between steps.
 
 ### Status Line
 
-`hooks/statusline.js` displays context window usage, projected quota utilization (5-hour and 7-day with time until reset), current model, and working directory:
+`hooks/statusline.js` displays context window usage, current model, working directory, and projected quota utilization (5-hour and 7-day with time until reset):
 ```
-━━━━━━┈┈┈┈      ━━━━━━━━┈┈ 48m     ━━━┈┈┈┈┈┈┈ 2.8d     Opus 4.6     project
+━━━━━━┈┈┈┈    Opus 4.6    project    ━━━━━━━━┈┈ 48m    ━━━┈┈┈┈┈┈┈ 2.8d
 ```
-Quota data is fetched from the Anthropic OAuth usage API with a 30-second cache. Time remaining adapts units automatically: minutes under 1h, hours under 1d, days otherwise. Filled segments use light gray, empty segments use a dotted line — intentionally subtle.
+Quota data is fetched from the Anthropic OAuth usage API with a 30-second cache. Time remaining adapts units automatically: minutes under 1h, hours under 1d, days otherwise. Filled segments use light gray, empty segments use a dotted line — intentionally subtle. Filled segments turn orange when projected usage reaches 90%+.
 
-**Projected usage, not current:** The quota bars show where you're heading, not where you are. The bar extrapolates current consumption rate across the full window — if you've used 20% in the first hour of a 5-hour window, it shows 100% (on pace to exhaust). This is more actionable than current utilization: a bar at 30% means nothing without knowing how much time remains, but a projected bar at 90% is an immediate signal to slow down. The API only exposes utilization percentage and reset time — no history, no rate, no breakdown — so projection is the best derived metric from the available data.
+**Projected usage, not current:** The quota bars show where you're heading, not where you are. The bar extrapolates current consumption rate across the full window — if you've used 20% in the first hour of a 5-hour window, it projects 100% (on pace to exhaust). A projected bar at 90% turns orange — an immediate signal to slow down.
 
 Enable in `settings.json`:
 ```json
