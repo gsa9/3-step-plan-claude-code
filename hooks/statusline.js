@@ -29,10 +29,10 @@ process.stdin.on('end', async () => {
     const quota = await getQuota();
     const elements = [
       buildContextBar(data),
-      buildModel(data),
       buildFolder(data),
       buildQuotaBar(quota?.five_hour, 5 * 3600),
       buildQuotaBar(quota?.seven_day, 7 * 86400),
+      buildModel(data),
     ];
     process.stdout.write(elements.filter(Boolean).join(COLOR + SEP + RESET));
   } catch (_) { /* statusline must never crash */ }

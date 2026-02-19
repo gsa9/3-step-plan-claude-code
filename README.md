@@ -752,9 +752,9 @@ One keypress per stage — no manual clearing between steps.
 
 ### Status Line
 
-`hooks/statusline.js` displays context window usage, current model, working directory, and projected quota utilization (5-hour and 7-day with time until reset):
+`hooks/statusline.js` displays context window usage, working directory, projected quota utilization (5-hour and 7-day with time until reset), and current model:
 ```
-━━━━━━┈┈┈┈    Opus 4.6    project    ━━━━━━━━┈┈ 48m    ━━━┈┈┈┈┈┈┈ 2.8d
+━━━━━━┈┈┈┈    project    ━━━━━━━━┈┈ 48m    ━━━┈┈┈┈┈┈┈ 2.8d    Opus 4.6
 ```
 Quota data is fetched from the Anthropic OAuth usage API with a 30-second cache. Time remaining adapts units automatically: minutes under 1h, hours under 1d, days otherwise. Filled segments use light gray, empty segments use a dotted line — intentionally subtle. Filled segments turn orange when projected usage reaches 90%+.
 
