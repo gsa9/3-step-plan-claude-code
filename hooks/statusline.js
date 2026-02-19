@@ -13,7 +13,8 @@ const FILLED       = '\u25B0';
 const FILLED_THIN  = '\u2500';
 const EMPTY        = '\u25B0';
 const EMPTY_OUTLINE = '\u25B1';
-const BAR_WIDTH = 10;
+const CONTEXT_BAR_WIDTH = 8;
+const QUOTA_BAR_WIDTH   = 8;
 const SEP       = '    ';
 
 const CLAUDE_DIR       = path.join(os.homedir(), '.claude');
@@ -40,9 +41,9 @@ process.stdin.on('end', async () => {
   } catch (_) { /* statusline must never crash */ }
 });
 
-function renderBar(pct) {
-  const filled = Math.max(0, Math.min(BAR_WIDTH, Math.round(pct / 100 * BAR_WIDTH)));
-  return COLOR_FILLED + FILLED.repeat(filled) + RESET + EMPTY_OUTLINE.repeat(BAR_WIDTH - filled);
+function renderBar(pct, width) {
+  const filled = Math.max(0, Math.min(width, Math.round(pct / 100 * width)));
+  return COLOR_FILLED + FILLED.repeat(filled) + RESET + EMPTY_OUTLINE.repeat(width - filled);
 }
 
 async function getQuota() {
@@ -95,7 +96,7 @@ function buildContextBar(data) {
   const remaining = data.context_window?.remaining_percentage;
   if (remaining == null) return '';
   const used = Math.round(100 - remaining);
-  return COLOR + used + '% ' + renderBar(used) + ' ' + RESET;
+  return renderBar(used, CONTEXT_BAR_WIDTH) + COLOR + ' ' + used + '%' + RESET;
 }
 
 function buildQuotaBar(period, windowSecs) {
@@ -112,11 +113,12 @@ function buildQuotaBar(period, windowSecs) {
     ? Math.round(period.utilization / elapsed * windowSecs)
     : (period.utilization || 0);
   const actual = period.utilization || 0;
-  const greenCount = Math.max(0, Math.min(BAR_WIDTH, Math.round(actual / 100 * BAR_WIDTH)));
-  const orangeCount = Math.max(0, Math.min(BAR_WIDTH, Math.round(projected / 100 * BAR_WIDTH)));
+  const w = QUOTA_BAR_WIDTH;
+  const greenCount = Math.max(0, Math.min(w, Math.round(actual / 100 * w)));
+  const orangeCount = Math.max(0, Math.min(w, Math.round(projected / 100 * w)));
   const bar = COLOR_FILLED + FILLED.repeat(greenCount)
     + COLOR_ORANGE + EMPTY.repeat(Math.max(0, orangeCount - greenCount))
-    + RESET + EMPTY_OUTLINE.repeat(BAR_WIDTH - Math.max(greenCount, orangeCount));
+    + RESET + EMPTY_OUTLINE.repeat(w - Math.max(greenCount, orangeCount));
   return bar + COLOR + ' ' + timeStr + RESET;
 }
 
@@ -125,5 +127,5 @@ function buildModel(data) {
 }
 
 function buildFolder(data) {
-  return COLOR + path.basename(data.workspace?.current_dir || '.') + RESET;
+  return COLOR + path.basename(data.workspace?.current_dir || '.') + ' ' + RESET;
 }
