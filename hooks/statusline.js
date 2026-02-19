@@ -6,9 +6,8 @@ const path = require('path');
 
 const RESET       = '\x1b[0m';
 const COLOR       = '\x1b[38;5;241m';
-const COLOR_FILLED = RESET;
-const COLOR_ORANGE = '\x1b[38;5;208m';
-const COLOR_YELLOW = '\x1b[38;5;220m';
+const COLOR_FILLED = '\x1b[32m';
+const COLOR_ORANGE = '\x1b[33m';
 const FILLED       = '\u25B0';
 const FILLED_THIN  = '\u2500';
 const EMPTY        = '\u25B0';
@@ -96,7 +95,7 @@ function buildContextBar(data) {
   const remaining = data.context_window?.remaining_percentage;
   if (remaining == null) return '';
   const used = Math.round(100 - remaining);
-  return renderBar(used, CONTEXT_BAR_WIDTH) + COLOR + ' ' + used + '%' + RESET;
+  return renderBar(used, CONTEXT_BAR_WIDTH) + ' ' + used + '%';
 }
 
 function buildQuotaBar(period, windowSecs) {
