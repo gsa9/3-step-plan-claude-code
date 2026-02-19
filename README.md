@@ -754,7 +754,7 @@ One keypress per stage — no manual clearing between steps.
 
 `hooks/statusline.js` displays context usage, working directory, quota projections, and model:
 ```
-▰▰▰▰▰▰▱▱ 12%    project     ▰▰▰▰▰▰▱▱ 48m    ▰▰▱▱▱▱▱▱ 2.8d    Opus 4.6
+▰▰▱▱▱▱▱▱ 25%    project     ▰▰▰▰▰▰▱▱ 48m    ▰▰▱▱▱▱▱▱ 2.8d    Opus 4.6
 ```
 Left to right: context bar (used % after bar), folder name, 5-hour quota with time remaining, 7-day quota with time remaining, model name. Filled segments (▰) use default text color, empty use outline (▱). Time adapts units: minutes (<1h), hours (<1d), days. Quota data from Anthropic OAuth API with 30s cache.
 
