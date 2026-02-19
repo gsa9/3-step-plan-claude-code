@@ -6,11 +6,13 @@ const path = require('path');
 
 const RESET       = '\x1b[0m';
 const COLOR       = '\x1b[38;5;241m';
-const COLOR_FILLED = '\x1b[38;5;250m';
-const COLOR_WARN   = '\x1b[38;5;208m';
-const WARN_THRESHOLD = 90;
-const FILLED       = '\u2501';
-const EMPTY        = '\u2508';
+const COLOR_FILLED = RESET;
+const COLOR_ORANGE = '\x1b[38;5;208m';
+const COLOR_YELLOW = '\x1b[38;5;220m';
+const FILLED       = '\u25B0';
+const FILLED_THIN  = '\u2500';
+const EMPTY        = '\u25B0';
+const EMPTY_OUTLINE = '\u25B1';
 const BAR_WIDTH = 10;
 const SEP       = '    ';
 
@@ -38,10 +40,9 @@ process.stdin.on('end', async () => {
   } catch (_) { /* statusline must never crash */ }
 });
 
-function renderBar(pct, warn) {
+function renderBar(pct) {
   const filled = Math.max(0, Math.min(BAR_WIDTH, Math.round(pct / 100 * BAR_WIDTH)));
-  const color = (warn && pct >= WARN_THRESHOLD) ? COLOR_WARN : COLOR_FILLED;
-  return color + FILLED.repeat(filled) + RESET + EMPTY.repeat(BAR_WIDTH - filled);
+  return COLOR_FILLED + FILLED.repeat(filled) + RESET + EMPTY_OUTLINE.repeat(BAR_WIDTH - filled);
 }
 
 async function getQuota() {
@@ -93,7 +94,8 @@ async function getQuota() {
 function buildContextBar(data) {
   const remaining = data.context_window?.remaining_percentage;
   if (remaining == null) return '';
-  return COLOR + renderBar(100 - remaining) + ' ' + RESET;
+  const used = Math.round(100 - remaining);
+  return COLOR + used + '% ' + renderBar(used) + ' ' + RESET;
 }
 
 function buildQuotaBar(period, windowSecs) {
@@ -109,7 +111,13 @@ function buildQuotaBar(period, windowSecs) {
   const projected = (elapsed > 0 && period.utilization > 0)
     ? Math.round(period.utilization / elapsed * windowSecs)
     : (period.utilization || 0);
-  return COLOR + renderBar(projected, true) + ' ' + timeStr + RESET;
+  const actual = period.utilization || 0;
+  const greenCount = Math.max(0, Math.min(BAR_WIDTH, Math.round(actual / 100 * BAR_WIDTH)));
+  const orangeCount = Math.max(0, Math.min(BAR_WIDTH, Math.round(projected / 100 * BAR_WIDTH)));
+  const bar = COLOR_FILLED + FILLED.repeat(greenCount)
+    + COLOR_ORANGE + EMPTY.repeat(Math.max(0, orangeCount - greenCount))
+    + RESET + EMPTY_OUTLINE.repeat(BAR_WIDTH - Math.max(greenCount, orangeCount));
+  return bar + COLOR + ' ' + timeStr + RESET;
 }
 
 function buildModel(data) {
