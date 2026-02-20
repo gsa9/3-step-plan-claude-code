@@ -107,6 +107,10 @@ Before writing _step2_plan.md, verify:
 4. **Guardrail placement** — every _step1_decisions.md pitfall is addressed in a specific phase, not just floating in the Rationale
 5. **Completeness** — all decisions are reflected in at least one phase's tasks or guardrails
 
+## Rules
+
+- **NEVER use Task tool.** No subagents. Read/Glob/Grep directly — you need the codebase in YOUR context to design accurate phases, file paths, and guardrails. Subagent results are invisible to you and produce plans that hallucinate paths and miss patterns.
+
 ## _step2_plan.md Format
 
 ```markdown
