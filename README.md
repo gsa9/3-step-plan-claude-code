@@ -34,7 +34,7 @@ Also included: `/trim` for token-efficient documentation condensing, and `/gc` f
 
 ## Why Custom Plan Skills?
 
-Claude Code has a [built-in Plan Mode](https://docs.anthropic.com/en/docs/claude-code) that I also use. These custom skills are an alternative I reach for when I want my own control over multi-phase plans — exploring options and pitfalls with `/step1` before committing, then creating structured plans with `/step2` that break work into self-contained phases for parallel execution.
+Claude Code has a [built-in Plan Mode](https://docs.anthropic.com/en/docs/claude-code) and subagents (the Task tool). These custom skills explicitly ban both in `/step1` and `/step2` — Plan Mode hijacks the skill's own flow, and subagents lose the codebase context that step1 needs for interrogation and step2 needs for accurate phase design. `/step3` uses subagents by design (it's a dispatcher) but still bans Plan Mode. The skills are the framework; built-in Plan Mode is a competing one.
 
 ### Why /step1, /step2, /step3?
 
@@ -696,9 +696,10 @@ The three-step pipeline is designed around context window limits:
 
 1. **Fresh sessions** — each step starts clean, avoiding context bloat from prior exploration
 2. **Artifacts as bridges** — `_step1_decisions.md` and `_step2_plan.md` carry only what the next step needs
-3. **Parallel subagents** — `/step3` dispatches small, focused phases that fit within subagent context budgets (~50-150 lines per dispatch)
-4. **No accumulated state** — the orchestrator in `/step3` tracks only phase numbers and status, not content
-5. **Rationale propagation** — the Rationale section in `_step2_plan.md` gives subagents awareness of the "why" and pitfalls without the orchestrator having to relay context from the analysis session
+3. **Direct reads in step1/step2** — both skills read files directly (Read/Glob/Grep), never via subagents. The main agent needs the code in its own context to interrogate decisions and design accurate phases
+4. **Parallel subagents in step3** — dispatches small, focused phases that fit within subagent context budgets (~50-150 lines per dispatch). Only step3 uses subagents — it's a dispatcher, not an explorer
+5. **No accumulated state** — the orchestrator in `/step3` tracks only phase numbers and status, not content
+6. **Rationale propagation** — the Rationale section in `_step2_plan.md` gives subagents awareness of the "why" and pitfalls without the orchestrator having to relay context from the analysis session
 
 **Fast execution:** With permissions pre-approved, execution is fast and — when you're confident — can run unsupervised to completion.
 

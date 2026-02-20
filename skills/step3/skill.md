@@ -154,6 +154,7 @@ Run complete. N/N phases succeeded. Committed & pushed: abc1235
 
 ## Constraints
 
+- **NEVER use EnterPlanMode.** This skill IS the execution framework. Plan mode hijacks the dispatch loop.
 - NEVER modify _step2_plan.md during execution
 - NEVER execute tasks directly — always delegate via Task tool
 - Minimal orchestrator context — 1 line per completed phase

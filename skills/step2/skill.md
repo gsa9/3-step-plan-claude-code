@@ -109,7 +109,7 @@ Before writing _step2_plan.md, verify:
 
 ## Rules
 
-- **NEVER use Task tool.** No subagents. Read/Glob/Grep directly — you need the codebase in YOUR context to design accurate phases, file paths, and guardrails. Subagent results are invisible to you and produce plans that hallucinate paths and miss patterns.
+- **NEVER use Task or EnterPlanMode.** This skill IS the planning framework. Subagents lose your context. Plan mode hijacks your flow. Read/Glob/Grep directly.
 
 ## _step2_plan.md Format
 
