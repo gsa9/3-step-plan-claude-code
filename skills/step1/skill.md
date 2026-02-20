@@ -87,6 +87,7 @@ Ask: "Want to revisit any of these, or move on?" If flagged, convert to regular 
 
 ## Rules
 
+- **NEVER use Task tool.** No subagents. Read/Glob/Grep directly — you need the code in YOUR context for interrogation. Subagent results are invisible to you and waste tokens re-reading.
 - No implementation. Only output is `_step1_decisions.md`. Exception: early resolution.
 - One question at a time. Never batch.
 - Never auto-chain to `/step2`.
