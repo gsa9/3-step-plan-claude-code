@@ -103,9 +103,13 @@ function buildQuotaBar(period, windowSecs) {
   const secs = period.resets_at ? (new Date(period.resets_at) - Date.now()) / 1000 : 0;
   let timeStr = '';
   if (secs > 0) {
-    if (secs < 3600)       timeStr = Math.round(secs / 60) + 'm';
-    else if (secs < 86400) timeStr = (secs / 3600).toFixed(1) + 'h';
-    else                   timeStr = (secs / 86400).toFixed(1) + 'd';
+    const m = Math.floor(secs / 60) % 60;
+    const h = Math.floor(secs / 3600) % 24;
+    const d = Math.floor(secs / 86400);
+    if (secs < 3600)        timeStr = m + 'm';
+    else if (secs < 18000)  timeStr = h + 'h' + (m ? ' ' + m + 'm' : '');
+    else if (secs < 86400)  timeStr = h + 'h';
+    else                    timeStr = d + 'd' + (h ? ' ' + h + 'h' : '');
   }
   const elapsed = windowSecs - Math.max(0, secs);
   const projected = (elapsed > 0 && period.utilization > 0)
@@ -118,7 +122,7 @@ function buildQuotaBar(period, windowSecs) {
   const bar = COLOR_FILLED + FILLED.repeat(greenCount)
     + COLOR_ORANGE + EMPTY.repeat(Math.max(0, orangeCount - greenCount))
     + RESET + EMPTY_OUTLINE.repeat(w - Math.max(greenCount, orangeCount));
-  return bar + COLOR + ' ' + timeStr + RESET;
+  return bar + COLOR + ' ' + timeStr + '  ' + RESET;
 }
 
 function buildModel(data) {
