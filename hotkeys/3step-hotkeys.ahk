@@ -7,7 +7,7 @@ EscToInsert() {
     KeyWait("Ctrl")
     Send("{Esc}")
     Sleep(200)
-    Send("i")
+    Send("a")
     Sleep(200)
 }
 
