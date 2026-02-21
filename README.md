@@ -713,7 +713,7 @@ For frequent use, keyboard shortcuts eliminate typing skill names entirely. The 
 
 | Hotkey | Action |
 |--------|--------|
-| <kbd>Ctrl+1</kbd> | Type `/step1 ` (stays editable — add context before submitting) |
+| <kbd>Ctrl+1</kbd> | Send `/step1` + Enter (use after conversation context or at end of a typed prompt) |
 | <kbd>Ctrl+2</kbd> | Clear context, then send `/step2` + Enter |
 | <kbd>Ctrl+3</kbd> | Clear context, then send `/step3` + Enter |
 | <kbd>Ctrl+H</kbd> | Send `/gc` + Enter |
@@ -721,12 +721,14 @@ For frequent use, keyboard shortcuts eliminate typing skill names entirely. The 
 
 **Why clear is built into <kbd>Ctrl+2</kbd> and <kbd>Ctrl+3</kbd>:** `/step2` and `/step3` are designed for fresh sessions — they read their input from artifact files (`_step1_decisions.md`, `_step2_plan.md`), not from conversation history. Running them in a stale context wastes tokens and risks confusing the model with leftover state. The `ClearAndCmd` function folds clear+invoke into one keypress. `/step1` and `/gc` don't auto-clear because they benefit from existing context — `/step1` often follows a conversation, and `/gc` commits what you just worked on.
 
+**Using <kbd>Ctrl+1</kbd>:** Since it submits immediately, provide context *before* pressing the hotkey. Two typical patterns: (1) you've been chatting and session history already has the context — just hit <kbd>Ctrl+1</kbd>; (2) type your prompt first describing what you want to change, then hit <kbd>Ctrl+1</kbd> to append `/step1` and submit.
+
 **The workflow cycle:**
 
 ```
-Ctrl+1  →  add context, submit  →  /step1 runs, writes _step1_decisions.md
-Ctrl+2  →  /clear clears context, /step2 reads _step1_decisions.md, writes _step2_plan.md
-Ctrl+3  →  /clear clears context, /step3 executes plan
+Ctrl+1  →  (context already in session or typed in prompt) → /step1 runs, writes _step1_decisions.md
+Ctrl+2  →  /clear + /step2 reads _step1_decisions.md, writes _step2_plan.md
+Ctrl+3  →  /clear + /step3 executes plan
 ```
 
 One keypress per stage — no manual clearing between steps.
@@ -745,7 +747,7 @@ One keypress per stage — no manual clearing between steps.
 
 **Notes:**
 - **Vim mode safety:** The script starts every hotkey with <kbd>Esc</kbd> → `i` to ensure the input is in insert mode regardless of current state. This prevents keystrokes from being interpreted as vim commands when the terminal is in normal mode. If you don't use vim mode in your terminal, this is harmless.
-- **Sleep timing:** `Sleep(200)` between keystrokes and `Sleep(1500)` after `/clear` + Enter ensure reliable sequencing. Claude Code needs time to process `/clear` before accepting the next command. Increase these values if keystrokes arrive before Claude Code is ready.
+- **Sleep timing:** `Sleep(200)` between keystrokes and `Sleep(2500)` after `/clear` + Enter ensure reliable sequencing. Claude Code needs time to process `/clear` before accepting the next command. Increase these values if keystrokes arrive before Claude Code is ready.
 - **`#HotIf` scoping:** `#HotIf WinActive("ahk_exe WindowsTerminal.exe")` scopes hotkeys exclusively to Windows Terminal — they never interfere with other applications. Customize this target for other terminals (e.g., `ahk_exe Code.exe` for VS Code's integrated terminal).
 - **macOS/Linux:** Similar bindings can be achieved with tools like Hammerspoon (macOS) or xdotool (Linux).
 
