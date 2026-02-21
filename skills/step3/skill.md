@@ -162,3 +162,5 @@ Run complete. N/N phases succeeded. Committed & pushed: abc1235
 - Fail-fast: stop on first failure, recommend checkpoint reset
 - On success: delete _step2_plan.md, commit and push
 - All-or-nothing: no resume, no partial recovery
+- **Gate: checkpoint before dispatch.** NEVER dispatch any subagent until the checkpoint commit hash has been created and stored. Without the checkpoint, failure recovery is impossible. No checkpoint = do not proceed.
+- **Gate: cleanup before farewell.** On success, NEVER report completion until `_step2_plan.md` has been deleted and the final commit+push is confirmed. Missing either = skill failed.

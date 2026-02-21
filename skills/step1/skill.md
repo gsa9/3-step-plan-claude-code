@@ -82,8 +82,8 @@ Ask: "Want to revisit any of these, or move on?" If flagged, convert to regular 
 ```
 `Rejected` and `Risks` exist so /step2 can convert them into guardrails. One line each. Omit if genuinely empty.
 2. Ask "Anything you'd change?" — apply changes if requested.
-3. **Write `_step1_decisions.md`** at repo root. This is the primary deliverable. Never skip it on the full bridge path.
-4. End with: `Next: /step2 to plan the implementation.`
+3. **MANDATORY: Write `_step1_decisions.md`** at repo root using the Write tool. Do this BEFORE any closing remarks. This file is the primary deliverable — without it, /step1 failed.
+4. Only AFTER the file is confirmed written, end with: `Next: /step2 to plan the implementation.`
 
 ## Rules
 
@@ -93,3 +93,4 @@ Ask: "Want to revisit any of these, or move on?" If flagged, convert to regular 
 - Never auto-chain to `/step2`.
 - Recommend, warn, push back, challenge.
 - **Take sides.** When one option is obviously better for LLM development (explicit names, less indirection, flatter structure), lead with it as `(Recommended)` with rationale. Still ask — but make the right choice effortless to confirm.
+- **Gate: file before farewell.** Never mention `/step2` or signal completion until `_step1_decisions.md` has been written with the Write tool in the current conversation. The file is proof the skill finished. No file = skill failed.

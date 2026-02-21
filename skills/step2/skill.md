@@ -20,9 +20,9 @@ _step2_plan.md is the **only context bridge** between this session and execution
 2. **Research** — Read codebase, identify files, patterns, dependencies
 3. **Design phases (parallelism-first)** — See Phase Design below
 4. **Validate** — See Validation Checklist below
-5. **Write _step2_plan.md** — At **repository root** (NEVER in subdirectories). Use `date` for timestamps
-6. **Delete `_step1_decisions.md`** — **MUST** delete immediately after writing _step2_plan.md. Leaving it behind causes stale context in future sessions
-7. **Confirm** — Show summary
+5. **MANDATORY: Write `_step2_plan.md`** — At **repository root** (NEVER in subdirectories) using the Write tool. Use `date` for timestamps. Do this BEFORE any closing remarks. This file is the primary deliverable — without it, /step2 failed.
+6. **MANDATORY: Delete `_step1_decisions.md`** — Immediately after writing _step2_plan.md, delete it with Bash `rm`. Leaving it behind causes stale context in future sessions. Verify deletion before continuing.
+7. **Confirm** — Only AFTER both file operations are confirmed, show summary and end with `Next: /step3 to execute.`
 
 ## Scan Integration
 
@@ -110,6 +110,7 @@ Before writing _step2_plan.md, verify:
 ## Rules
 
 - **NEVER use Task or EnterPlanMode.** This skill IS the planning framework. Subagents lose your context. Plan mode hijacks your flow. Read/Glob/Grep directly.
+- **Gate: write before farewell.** Never mention `/step3` or signal completion until `_step2_plan.md` has been written with the Write tool AND `_step1_decisions.md` has been deleted in the current conversation. Both file operations are proof the skill finished. Missing either = skill failed.
 
 ## _step2_plan.md Format
 
