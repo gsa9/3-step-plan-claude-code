@@ -83,7 +83,7 @@ Ask: "Want to revisit any of these, or move on?" If flagged, convert to regular 
 `Rejected` and `Risks` exist so /step2 can convert them into guardrails. One line each. Omit if genuinely empty.
 2. Ask "Anything you'd change?" — apply changes if requested.
 3. **MANDATORY: Write `_step1_decisions.md`** at repo root using the Write tool. Do this BEFORE any closing remarks. This file is the primary deliverable — without it, /step1 failed.
-4. Only AFTER the file is confirmed written, end with: `Next: /step2 to plan the implementation.`
+4. Only AFTER the file is confirmed written, end with: `Next: /step2 to plan the implementation. Tip: /clear first so /step2 gets a full context window.`
 
 ## Rules
 

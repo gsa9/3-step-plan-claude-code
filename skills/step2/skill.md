@@ -22,7 +22,7 @@ _step2_plan.md is the **only context bridge** between this session and execution
 4. **Validate** — See Validation Checklist below
 5. **MANDATORY: Write `_step2_plan.md`** — At **repository root** (NEVER in subdirectories) using the Write tool. Use `date` for timestamps. Do this BEFORE any closing remarks. This file is the primary deliverable — without it, /step2 failed.
 6. **MANDATORY: Delete `_step1_decisions.md`** — Immediately after writing _step2_plan.md, delete it with Bash `rm`. Leaving it behind causes stale context in future sessions. Verify deletion before continuing.
-7. **Confirm** — Only AFTER both file operations are confirmed, show summary and end with `Next: /step3 to execute.`
+7. **Confirm** — Only AFTER both file operations are confirmed, show summary and end with `Next: /step3 to execute. Tip: /clear first so /step3 gets a full context window.`
 
 ## Scan Integration
 
@@ -161,7 +161,7 @@ Plan created: _step2_plan.md
 - Phases: N (M can run in parallel)
 - Parallel groups: N
 - Est. dispatch sizes: all within budget / Phase X may be tight
-Next: /step3 to execute.
+Next: /step3 to execute. Tip: /clear first so /step3 gets a full context window.
 ```
 
 ## Lifecycle
