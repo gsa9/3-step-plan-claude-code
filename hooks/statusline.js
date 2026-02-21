@@ -122,7 +122,7 @@ function buildQuotaBar(period, windowSecs) {
   const bar = COLOR_FILLED + FILLED.repeat(greenCount)
     + COLOR_ORANGE + EMPTY.repeat(Math.max(0, orangeCount - greenCount))
     + RESET + EMPTY_OUTLINE.repeat(w - Math.max(greenCount, orangeCount));
-  return bar + COLOR + ' ' + timeStr + '  ' + RESET;
+  return bar + COLOR + ' ' + timeStr + RESET;
 }
 
 function buildModel(data) {
@@ -130,5 +130,5 @@ function buildModel(data) {
 }
 
 function buildFolder(data) {
-  return COLOR + path.basename(data.workspace?.current_dir || '.') + ' ' + RESET;
+  return COLOR + path.basename(data.workspace?.current_dir || '.') + RESET;
 }
