@@ -197,7 +197,7 @@ Dispatches phases from `_step2_plan.md` to subagents. The main thread is a light
 - Creates a git checkpoint before any work begins
 - Runs parallel groups concurrently, serial groups in order
 - Fail-fast: stops on first failure, recommends checkpoint reset
-- On success: deletes `_step2_plan.md`, commits and pushes
+- On success: deletes `_step2_plan.md`, commits and pushes (if remote configured)
 
 **Execution model:** All-or-nothing. A git checkpoint is created before any phase runs. If anything fails, reset to the checkpoint — no partial recovery, no resume.
 
@@ -547,7 +547,7 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
                     ┌─────────▼─────────┐
                     │ 1. CHECKPOINT     │
                     │   • git add -A    │
-                    │     commit + push │◀─── SAFETY NET
+                    │     commit (+push)│◀─── SAFETY NET
                     │   • Store hash   │
                     │   • _step2_plan  │
                     │     .md included │
@@ -595,7 +595,7 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
                     │ 4. SUCCESS        │
                     │  • Del _step2_   │
                     │    plan.md       │
-                    │  • Commit + push  │
+                    │  • Commit (+push) │
                     │  • Report summary │◀─── code is the deliverable
                     └───────────────────┘
 
@@ -632,7 +632,7 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
 
   ON SUCCESS → COMMIT & CLEAN
   ───────────────────────────
-  _step2_plan.md deleted. Changes committed and pushed.
+  _step2_plan.md deleted. Changes committed (pushed if remote).
   Code is the deliverable.
 ```
 

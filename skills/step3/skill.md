@@ -5,86 +5,52 @@ description: "ONLY when user explicitly types /step3. Never auto-trigger on exec
 
 # /step3 - Execute Plan via Subagents
 
-Execute _step2_plan.md by dispatching phases to subagents. Main thread orchestrates only.
+Execute `_step2_plan.md` by dispatching phases to subagents via Task tool. Main thread orchestrates only — it never executes tasks directly.
 
-**Designed for fresh session** — no prior context needed. _step2_plan.md contains everything.
+Designed for a fresh session with zero prior context. `_step2_plan.md` contains everything.
 
-**Execution model:** All-or-nothing. A git checkpoint is created before any phase runs. If anything fails, the user resets to the checkpoint — no partial recovery, no resume.
+## Gates
 
-## Orchestrator Rules
+Violations of any gate = skill failed. Dual-framed for clarity.
 
-Main thread is a **lightweight dispatcher**:
-- Reads _step2_plan.md ONCE at start
-- Stores only: phase numbers, dependencies, parallel groups, titles
-- Dispatches subagents via Task tool (general-purpose)
-- Reports 1-line progress per phase
+1. **NEVER use EnterPlanMode.** This skill IS the execution framework — plan mode hijacks the dispatch loop.
+2. **Create a git checkpoint commit BEFORE dispatching any subagent.** Store the commit hash — without it, failure recovery is impossible.
+3. **On success, delete `_step2_plan.md` and create final commit BEFORE reporting completion.** Missing either = skill failed.
+4. **NEVER execute tasks directly — always delegate via Task tool (general-purpose).** Main thread orchestrates only.
 
-Main thread **NEVER**:
-- Executes tasks directly
-- Reads files beyond _step2_plan.md
-- Accumulates subagent details in its own context
+## Flow
 
-## Execution Flow
+Execution model: all-or-nothing. A git checkpoint is created before any phase runs. If anything fails, the user resets to the checkpoint — no partial recovery, no resume.
 
-```
-1. CHECKPOINT
-   - Run: git add -A && git commit -m "checkpoint before run" && git push
-   - Store the commit hash (git rev-parse HEAD)
-   - This commits everything including _step2_plan.md — the safety net
+Main thread is a lightweight dispatcher: reads `_step2_plan.md` once, stores only phase numbers / dependencies / parallel groups / titles, dispatches subagents, and reports 1-line progress per phase. It never reads files beyond `_step2_plan.md` and never accumulates subagent details in its own context.
 
-2. LOAD
-   - Read _step2_plan.md, verify marker <!-- @plan: /step2 ... -->
-   - Parse phases overview table (deps, groups, titles)
+### 1. CHECKPOINT
 
-3. EXECUTE LOOP
-   While phases remain:
-   a. Find ready phases (deps satisfied, not done)
-   b. Batch by parallel group:
-      - All ready in same group → ONE message with MULTIPLE Task calls (parallel)
-      - NEVER mix different groups in parallel
-   c. Dispatch subagent(s) — one Task call per phase
-   d. On ANY failure: STOP, jump to FAILURE
-   e. Log: "✓ Phase N: [title]"
+**[Gate 2 enforced here]** — do not proceed past this step without a stored commit hash.
 
-4. ON SUCCESS
-   - Delete _step2_plan.md
-   - Run: git add -A && git commit -m "run complete: [Goal field from _step2_plan.md]" && git push
-   - Store the final commit hash
-   - Report: "Run complete. N/N phases succeeded. Committed & pushed: <short-hash>"
+- Run: `git add -A && git commit -m "checkpoint before run"`
+- Check for remote: `git remote | head -1` — if a remote exists, run `git push`; otherwise skip push
+- Store the commit hash: `git rev-parse HEAD`
+- This commits everything including `_step2_plan.md` — the safety net
 
-5. ON FAILURE — see Failure Protocol below
-```
+### 2. LOAD
 
-## Failure Protocol
+- Read `_step2_plan.md`, verify marker `<!-- @plan: /step2 ... -->`
+- Parse phases overview table (deps, groups, titles)
 
-A phase has failed when the Task tool errors (agent crash, timeout) or the subagent explicitly reports it could not complete a task.
+### 3. EXECUTE LOOP
 
-On any failure:
+While phases remain:
 
-```
-╔══════════════════════════════════════════════════════════════════╗
-║  PLAN FAILED — RESET TO CHECKPOINT RECOMMENDED                 ║
-║                                                                 ║
-║  Checkpoint: <hash> (committed at start of this session)        ║
-║                                                                 ║
-║  To recover:                                                    ║
-║    git reset --hard <hash>                                      ║
-║    git push --force                                             ║
-║                                                                 ║
-║  This discards ALL changes from this run and restores           ║
-║  the codebase with _step2_plan.md intact for a clean re-run.    ║
-╠══════════════════════════════════════════════════════════════════╣
-║  Failed: Phase N — [error summary]                              ║
-║  Completed before failure: Phases X, Y, Z                       ║
-║  Not started: Phases A, B, C                                    ║
-╚══════════════════════════════════════════════════════════════════╝
-```
+1. Find ready phases (deps satisfied, not done)
+2. Batch by parallel group:
+   - All ready in same group -> ONE message with MULTIPLE Task calls (parallel)
+   - NEVER mix different groups in parallel
+3. Dispatch subagent(s) — one Task call per phase, using the template below
+4. On ANY failure: STOP, jump to step 5 (ON FAILURE)
+5. Log: `"Phase N: [title]"`
 
-**Do NOT suggest partial recovery, resuming, or fixing in place.** Propose the reset. If the user wants to keep partial changes, that's their call.
-
-## Subagent Dispatch
-
-Each subagent receives ONLY:
+**Subagent dispatch template** — each subagent receives ONLY this text:
 
 ```markdown
 # Context
@@ -108,7 +74,44 @@ Working directory: [absolute path]
 6. Return 1-2 sentence summary of what was done
 ```
 
-## Progress Output
+### 4. ON SUCCESS
+
+**[Gate 3 enforced here]** — do not report completion until both steps below are confirmed.
+
+- Delete `_step2_plan.md`
+- Run: `git add -A && git commit -m "run complete: [Goal field from _step2_plan.md]"`
+- Check for remote: `git remote | head -1` — if a remote exists, run `git push`; otherwise skip push
+- Store the final commit hash
+- Report: `"Run complete. N/N phases succeeded. Committed: <short-hash>"`
+
+### 5. ON FAILURE
+
+A phase has failed when the Task tool errors (agent crash, timeout) or the subagent explicitly reports it could not complete a task.
+
+On any failure, present:
+
+```
++------------------------------------------------------------------+
+|  PLAN FAILED -- RESET TO CHECKPOINT RECOMMENDED                  |
+|                                                                   |
+|  Checkpoint: <hash> (committed at start of this session)          |
+|                                                                   |
+|  To recover:                                                      |
+|    git reset --hard <hash>                                        |
+|    git push --force                                               |
+|                                                                   |
+|  This discards ALL changes from this run and restores             |
+|  the codebase with _step2_plan.md intact for a clean re-run.     |
++-------------------------------------------------------------------+
+|  Failed: Phase N -- [error summary]                               |
+|  Completed before failure: Phases X, Y, Z                         |
+|  Not started: Phases A, B, C                                      |
++-------------------------------------------------------------------+
+```
+
+Do NOT suggest partial recovery, resuming, or fixing in place. Propose the reset. If the user wants to keep partial changes, that is their call.
+
+## Format
 
 ```
 /step3
@@ -117,26 +120,21 @@ Checkpoint created: abc1234
 Loading _step2_plan.md... N phases, M parallel groups
 
 Group A:
-  ✓ Phase 1: [title]
+  Phase 1: [title]
 
 Group B (parallel):
-  ✓ Phase 2: [title]
-  ✓ Phase 3: [title]
+  Phase 2: [title]
+  Phase 3: [title]
 Group C:
-  ✓ Phase 4: [title]
+  Phase 4: [title]
 
-Run complete. N/N phases succeeded. Committed & pushed: abc1235
+Run complete. N/N phases succeeded. Committed: abc1235
 ```
 
-## Constraints
+## Rules
 
-- **NEVER use EnterPlanMode.** This skill IS the execution framework. Plan mode hijacks the dispatch loop.
-- NEVER modify _step2_plan.md during execution
-- NEVER execute tasks directly — always delegate via Task tool
-- Minimal orchestrator context — 1 line per completed phase
-- Same parallel group only — never cross-group parallel
-- Fail-fast: stop on first failure, recommend checkpoint reset
-- On success: delete _step2_plan.md, commit and push
-- All-or-nothing: no resume, no partial recovery
-- **Gate: checkpoint before dispatch.** NEVER dispatch any subagent until the checkpoint commit hash has been created and stored. Without the checkpoint, failure recovery is impossible. No checkpoint = do not proceed.
-- **Gate: cleanup before farewell.** On success, NEVER report completion until `_step2_plan.md` has been deleted and the final commit+push is confirmed. Missing either = skill failed.
+- Never resume or partially recover — all-or-nothing with checkpoint reset
+- Minimal orchestrator context — store 1 line per completed phase, nothing more
+- Same parallel group only — never dispatch phases from different groups in parallel
+- Fail-fast — stop on first failure, present reset box immediately
+- Never modify `_step2_plan.md` during execution — it is the source of truth

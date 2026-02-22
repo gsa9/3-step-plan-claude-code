@@ -3,17 +3,22 @@ name: step1
 description: "ONLY when user explicitly types /step1. Never auto-trigger on think, scan, consider, or examine."
 ---
 
-# /step1 - Explore → Interrogate → Bridge
+# /step1
 
-Structured Q&A that converges on decisions. Questions evolve based on answers.
+Structured Q&A that converges on decisions. Produces `_step1_decisions.md` at repo root; `/step2` consumes it.
 
-## Arguments
+## Gates
 
+1. **Read/Glob/Grep directly.** NEVER use Task or EnterPlanMode — subagents lose your context, plan mode hijacks your flow.
+2. **Write `_step1_decisions.md` with the Write tool BEFORE any closing remarks.** Never mention /step2 until the file exists — the file is proof the skill finished.
+3. **One question at a time via AskUserQuestion.** Never batch — each answer reshapes the next question.
+
+## Flow
+
+**Arguments:**
 - `/step1` — asks "What needs solving?"
 - `/step1 <topic>` — skips opening question
 - `/step1 resume` — finds last decision tracker in conversation, continues
-
-## Flow
 
 ### 1. EXPLORE
 
@@ -22,8 +27,6 @@ Structured Q&A that converges on decisions. Questions evolve based on answers.
 3. Output: `"~N decisions to work through (some will be auto-decided)"`
 
 ### 2. INTERROGATE
-
-One question at a time via `AskUserQuestion`.
 
 **Auto-decide** when:
 - Codebase evidence makes one option overwhelmingly correct
@@ -82,15 +85,12 @@ Ask: "Want to revisit any of these, or move on?" If flagged, convert to regular 
 ```
 `Rejected` and `Risks` exist so /step2 can convert them into guardrails. One line each. Omit if genuinely empty.
 2. Ask "Anything you'd change?" — apply changes if requested.
-3. **MANDATORY: Write `_step1_decisions.md`** at repo root using the Write tool. Do this BEFORE any closing remarks. This file is the primary deliverable — without it, /step1 failed.
+3. **Gate: file before farewell.** Write `_step1_decisions.md` at repo root using the Write tool now — do not proceed to closing remarks without it. This file is the primary deliverable; without it, /step1 failed.
 4. Only AFTER the file is confirmed written, end with: `Next: /step2 to plan the implementation. Tip: /clear first so /step2 gets a full context window.`
 
 ## Rules
 
-- **NEVER use Task or EnterPlanMode.** This skill IS the exploration framework. Subagents lose your context. Plan mode hijacks your flow. Read/Glob/Grep directly.
+- **Take sides.** When one option is obviously better for LLM development (explicit names, less indirection, flatter structure), lead with it as `(Recommended)` with rationale — make the right choice effortless to confirm.
+- Push back on risky choices even if the user seems confident — warn, challenge, recommend.
+- Never auto-chain to `/step2` — always let the user invoke it.
 - No implementation. Only output is `_step1_decisions.md`. Exception: early resolution.
-- One question at a time. Never batch.
-- Never auto-chain to `/step2`.
-- Recommend, warn, push back, challenge.
-- **Take sides.** When one option is obviously better for LLM development (explicit names, less indirection, flatter structure), lead with it as `(Recommended)` with rationale. Still ask — but make the right choice effortless to confirm.
-- **Gate: file before farewell.** Never mention `/step2` or signal completion until `_step1_decisions.md` has been written with the Write tool in the current conversation. The file is proof the skill finished. No file = skill failed.
