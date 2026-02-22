@@ -6,26 +6,26 @@
 EscToInsert() {
     KeyWait("Ctrl")
     Send("{Esc}")
-    Sleep(200)
+    Sleep(300)
     Send("a")
-    Sleep(200)
+    Sleep(300)
 }
 
 ClearAndCmd(cmd) {
     EscToInsert()
     SendText("/clear")
-    Sleep(200)
+    Sleep(300)
     Send("{Enter}")
     Sleep(2000)
     SendText(cmd)
-    Sleep(200)
+    Sleep(300)
     Send("{Enter}")
 }
 
 EscAndEnter(cmd) {
     EscToInsert()
     SendText(cmd)
-    Sleep(200)
+    Sleep(300)
     Send("{Enter}")
 }
 
