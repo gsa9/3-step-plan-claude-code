@@ -180,7 +180,7 @@ Reads `_step1_decisions.md` and produces a self-contained execution plan. Design
 - Transforms decisions into phases with explicit file paths, guardrails, and dependencies
 - Maximizes parallelism — groups independent phases for concurrent execution
 - Keeps each phase within a context budget (~50-150 lines) so subagents stay focused
-- Validates before writing: parallel maximization, no file collisions, subagent autonomy, guardrail placement, completeness
+- Validates before confirming: parallel maximization, no file collisions, subagent autonomy, guardrail placement, completeness
 
 **Output:** `_step2_plan.md` at repo root. Deletes `_step1_decisions.md` after writing.
 
@@ -445,21 +445,21 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
                               └────────┬────────┘
                                        │
                               ┌────────▼────────┐
-                              │ 3. DESIGN       │◀──── PARALLELISM-FIRST
-                              │    PHASES       │
-                              │  • ID work units│
-                              │  • Group by     │
-                              │    independence │
-                              │  • Form parallel│
-                              │    groups FIRST │
-                              │  • Serialize    │
-                              │    only if must │
-                              │  • Split to     │
-                              │    unlock more  │
+                              │ 3. DESIGN +     │◀──── PARALLELISM-FIRST
+                              │    WRITE        │
+                              │  • One phase per│
+                              │    file (default│
+                              │  • Diff files = │
+                              │    parallel     │
+                              │  • Split only if│
+                              │    part creates │
+                              │    a dependency │
+                              │  • Write plan in│
+                              │    one Write cal│
                               └────────┬────────┘
                                        │
                               ┌────────▼────────┐
-                              │ 4. VALIDATE     │◀──── BEFORE WRITING
+                              │ 4. VALIDATE     │◀──── BEFORE CONFIRMING
                               │  • Max parallel?│
                               │  • No collisions│
                               │  • Subagent     │
@@ -506,11 +506,10 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
 
   PARALLELISM-FIRST DESIGN
   ────────────────────────
-  1. Identify work units (every file/module change)
-  2. Group by independence (separate files = parallel)
-  3. Form parallel groups FIRST
-  4. Serialize only what must be serial
-  5. Split to unlock more parallelism
+  Default: one phase per file
+  Different files = parallel group
+  Split only when part of a file creates
+  a dependency other phases need first
 
   VALIDATION (before writing)
   ──────────────────────────

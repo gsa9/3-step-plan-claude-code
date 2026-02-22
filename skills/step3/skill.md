@@ -55,13 +55,9 @@ Main thread **NEVER**:
 5. ON FAILURE — see Failure Protocol below
 ```
 
-## Failure Detection
-
-A phase has failed when:
-- The Task tool itself errors (agent crash, timeout)
-- The subagent explicitly reports it could not complete a task
-
 ## Failure Protocol
+
+A phase has failed when the Task tool errors (agent crash, timeout) or the subagent explicitly reports it could not complete a task.
 
 On any failure:
 
@@ -90,35 +86,15 @@ On any failure:
 
 Each subagent receives ONLY:
 
-**First parallel group** — full context:
 ```markdown
 # Context
 Goal: [1-2 sentences from _step2_plan.md Goal field]
 Rationale: [from _step2_plan.md Rationale section]
 Working directory: [absolute path]
 
-# Your Assignment: Phase N
-[EXACT phase section copied from _step2_plan.md]
-
-# Instructions
-1. Read the Reference files FIRST — understand patterns before writing code
-2. Execute all tasks in order
-3. RESPECT Guardrails — these are hard constraints, not suggestions
-4. Stay within Modifies scope — do not touch files outside it
-5. On failure: stop immediately, return error details
-6. Return 1-2 sentence summary of what was done
-```
-
-**Later parallel groups** — lighter context:
-```markdown
-# Context
-Goal: [1-2 sentences from _step2_plan.md Goal field]
-Working directory: [absolute path]
-Follow patterns in CLAUDE.md and Reference files.
-
 # Dependencies
-[Verbatim dependency notes from _step2_plan.md, e.g.:]
-- Depends: 2 (creates lib/core.py)
+[Verbatim dependency notes from Phases Overview, e.g.: "Depends: 2 (creates lib/core.py)"]
+[Omit section if phase has no dependencies]
 
 # Your Assignment: Phase N
 [EXACT phase section copied from _step2_plan.md]
