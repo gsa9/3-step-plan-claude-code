@@ -81,9 +81,10 @@ Ask: "Want to revisit any of these, or move on?" If flagged, convert to regular 
 **Risks:** [trade-offs and pitfalls carried by chosen approach]
 **Scope:** [in/out]
 **Key decisions:**
-- [decision]
+- [decision — specific enough to implement without interpretation]
 ```
 `Rejected` and `Risks` exist so /step2 can convert them into guardrails. One line each. Omit if genuinely empty.
+Each key decision must be implementable as-is — if /step2 would need to choose between two valid interpretations, the decision is too vague.
 2. Ask "Anything you'd change?" — apply changes if requested.
 3. **Gate: file before farewell.** Write `_step1_decisions.md` at repo root using the Write tool now — do not proceed to closing remarks without it. This file is the primary deliverable; without it, /step1 failed.
 4. Only AFTER the file is confirmed written, end with: `Next: /step2 to plan the implementation. Tip: /clear first so /step2 gets a full context window.`
@@ -91,6 +92,7 @@ Ask: "Want to revisit any of these, or move on?" If flagged, convert to regular 
 ## Rules
 
 - **Take sides.** When one option is obviously better for LLM development (explicit names, less indirection, flatter structure), lead with it as `(Recommended)` with rationale — make the right choice effortless to confirm.
+- **Specify mechanisms, not intent.** Key decisions must name the exact pattern, API, or control — not the goal they serve. Bad: "rename dialog", "editable field", "state store". Good: "owned modal dialog class", "inline text input control", "context provider with reducer". Ambiguous mechanism names cause /step2 to diverge across runs.
 - Push back on risky choices even if the user seems confident — warn, challenge, recommend.
 - Never auto-chain to `/step2` — always let the user invoke it.
 - No implementation. Only output is `_step1_decisions.md`. Exception: early resolution.
