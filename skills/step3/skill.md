@@ -1,9 +1,9 @@
 ---
-name: step3_alt
-description: "ONLY when user explicitly types /step3_alt. Never auto-trigger on execute, run, or implement."
+name: step3
+description: "ONLY when user explicitly types /step3. Never auto-trigger on execute, run, or implement."
 ---
 
-# /step3_alt
+# /step3
 
 Execute `_step2_plan.md` by dispatching phases to subagents via Task tool. Main thread orchestrates only — never executes tasks directly.
 

@@ -1,9 +1,9 @@
 ---
-name: step1_alt
-description: "ONLY when user explicitly types /step1_alt. Never auto-trigger on think, scan, consider, or examine."
+name: step1
+description: "ONLY when user explicitly types /step1. Never auto-trigger on think, scan, consider, or examine."
 ---
 
-# /step1_alt
+# /step1
 
 Structured Q&A → `_step1_decisions.md` at repo root → `/step2` consumes it.
 
@@ -17,9 +17,9 @@ Structured Q&A → `_step1_decisions.md` at repo root → `/step2` consumes it.
 ## Flow
 
 **Arguments:**
-- `/step1_alt` → ask "What needs solving?"
-- `/step1_alt <topic>` → skip opening question
-- `/step1_alt resume` → find last tracker in conversation, continue
+- `/step1` → ask "What needs solving?"
+- `/step1 <topic>` → skip opening question
+- `/step1 resume` → find last tracker in conversation, continue
 
 ### EXPLORE
 

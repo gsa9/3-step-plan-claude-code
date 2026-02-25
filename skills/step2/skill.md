@@ -1,10 +1,10 @@
 ---
-name: step2_alt
-description: "ONLY when user explicitly types /step2_alt. Never auto-trigger on plan, design, or architect."
+name: step2
+description: "ONLY when user explicitly types /step2. Never auto-trigger on plan, design, or architect."
 argument-hint: "[goal description]"
 ---
 
-# /step2_alt
+# /step2
 
 Create `_step2_plan.md` at repo root — sole input for `/step3` subagents with zero prior context.
 
