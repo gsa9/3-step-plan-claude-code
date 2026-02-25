@@ -9,9 +9,10 @@ Structured Q&A → `_step1_decisions.md` at repo root → `/step2` consumes it.
 
 ## Gates
 
-1. Read/Glob/Grep only. NO Task (loses context), NO EnterPlanMode (hijacks flow).
+1. Read/Glob/Grep only. NO Task (loses context), NO EnterPlanMode/ExitPlanMode (hijacks flow).
 2. Write `_step1_decisions.md` (Write tool) BEFORE closing remarks. File = skill completion proof. No /step2 mention until file exists.
 3. One AskUserQuestion at a time. Each answer reshapes the next.
+4. No implementation — decisions only. Early resolution (single-file fix) is the sole exception.
 
 ## Flow
 
@@ -76,12 +77,12 @@ Note: 1 question + multi-file scope = full bridge, not early resolution.
 Key decisions implementable as-is — if /step2 must choose between interpretations, too vague.
 2. "Anything you'd change?" — apply if yes.
 3. **Gate: write `_step1_decisions.md` NOW.** Primary deliverable — no closing without it.
-4. After file written: `Next: /step2 to plan implementation. Tip: /clear first for full context window.`
+4. After file written: `Next: /step2 to plan implementation. Tip: /clear first for full context window.` Stop — no further action.
 
 ## Rules
 
+- **No implementation — decisions only, never code.** Early resolution excepted.
 - **Take sides.** Better for LLM dev (explicit names, less indirection, flatter) → `(Recommended)` + rationale.
 - **Mechanisms, not intent.** Name exact pattern/API/control. ✗ "rename dialog", "editable field", "state store". ✓ "owned modal dialog class", "inline text input control", "context provider with reducer". Ambiguity → /step2 divergence.
 - Push back on risky choices — warn, challenge, recommend.
 - Never auto-chain to /step2 — user invokes it.
-- No implementation. Output: `_step1_decisions.md` only. Exception: early resolution.

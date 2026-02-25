@@ -13,7 +13,7 @@ Fresh session, zero prior context. `_step2_plan.md` contains everything.
 
 Violation = skill failure.
 
-1. NO EnterPlanMode — this skill IS the execution framework.
+1. NO EnterPlanMode/ExitPlanMode — this skill IS the execution framework.
 2. Git checkpoint commit BEFORE dispatching any subagent. Store hash — without it, failure recovery impossible.
 3. On success: delete `_step2_plan.md` + final commit BEFORE reporting completion.
 4. NEVER execute tasks directly — delegate via Task tool (general-purpose).

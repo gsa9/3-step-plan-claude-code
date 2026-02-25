@@ -12,9 +12,10 @@ Create `_step2_plan.md` at repo root — sole input for `/step3` subagents with 
 
 Violation = skill failure.
 
-1. Read/Glob/Grep only. NO Task (loses context), NO EnterPlanMode.
+1. Read/Glob/Grep only. NO Task (loses context), NO EnterPlanMode/ExitPlanMode.
 2. Write `_step2_plan.md` AND delete `_step1_decisions.md` BEFORE closing remarks. Plan file = completion proof. No /step3 mention until both done.
 3. No early exit. After reading `_step1_decisions.md` + codebase, MUST produce `_step2_plan.md`.
+4. No code — output is `_step2_plan.md` only, never source file edits.
 
 ## Flow
 
@@ -59,7 +60,7 @@ Fix failures via Edit.
 ### 5. CLEANUP
 
 Delete `_step1_decisions.md` (`rm`, verify). Output summary block. End:
-`Next: /step3 to execute. Tip: /clear first for full context window.`
+`Next: /step3 to execute. Tip: /clear first for full context window.` Stop — no further action.
 
 ## Format
 
