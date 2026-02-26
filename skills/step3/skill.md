@@ -80,43 +80,11 @@ Working directory: [absolute path]
 
 Failed = Task tool errors (crash, timeout) or subagent reports could not complete.
 
-```
-+-------------------------------------------------------+
-| PLAN FAILED — RESET TO CHECKPOINT RECOMMENDED         |
-| Checkpoint: <hash>                                    |
-| Recovery: git reset --hard <hash> && git push --force |
-| (Discards ALL changes, restores _step2_plan.md)       |
-+-------------------------------------------------------+
-| Failed: Phase N — [error summary]                     |
-| Completed: Phases X, Y, Z                             |
-| Not started: Phases A, B, C                           |
-+-------------------------------------------------------+
-```
+**PLAN FAILED — RESET RECOMMENDED**
+Checkpoint: `<hash>` | Recovery: `git reset --hard <hash> && git push --force`
+Restores all changes including `_step2_plan.md`.
+- **Failed:** Phase N — [error summary]
+- **Completed:** Phases X, Y, Z
+- **Not started:** Phases A, B, C
 
 Do NOT suggest partial recovery or fixing in place. Propose reset. User decides to keep partial changes.
-
-## Format
-
-```
-Checkpoint created: abc1234
-Loading _step2_plan.md... N phases, M parallel groups
-
-Group A:
-  Phase 1: [title]
-
-Group B (parallel):
-  Phase 2: [title]
-  Phase 3: [title]
-Group C:
-  Phase 4: [title]
-
-Run complete. N/N phases succeeded. Committed: abc1235
-```
-
-## Rules
-
-- All-or-nothing — never resume or partially recover, checkpoint reset only.
-- Minimal orchestrator context — 1 line per completed phase, nothing more.
-- Same parallel group only — never mix groups in parallel.
-- Fail-fast — stop on first failure, present reset box.
-- Never modify `_step2_plan.md` during execution — source of truth.

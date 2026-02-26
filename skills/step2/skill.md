@@ -60,7 +60,7 @@ Fix failures via Edit.
 ### 5. CLEANUP
 
 Delete `_step1_decisions.md` (`rm`, verify). Output summary block. End:
-`Next: /step3 to execute. Tip: /clear first for full context window.` Stop — no further action.
+`Next: /step3 to execute.` Stop — no further action.
 
 ## Format
 
@@ -86,6 +86,7 @@ Delete `_step1_decisions.md` (`rm`, verify). Output summary block. End:
 |-------|------|---------|----------------|------------|
 | 1 | ... | - | A | ~60 |
 | 2 | ... | 1 (creates lib/types.ts) | B | ~80 |
+<!-- Depends: numeric + what it provides, no transitive. Parallel Group: same letter = concurrent, MUST NOT share modified files. Est. Lines: dispatched line count. Table is orchestration-only, not dispatched. -->
 
 ## Phase Details
 
@@ -100,11 +101,6 @@ Delete `_step1_decisions.md` (`rm`, verify). Output summary block. End:
 - [ ] Concrete task 2
 ```
 
-**Overview table (orchestration only, not dispatched):**
-- `Depends`: explicit numeric + what it provides: "1 (creates lib/types.ts)". No transitive repetition.
-- `Parallel Group`: same letter = concurrent. MUST NOT share modified files.
-- `Est. Lines`: dispatched line count of Phase Details section.
-
 ### Output
 
 ```
@@ -112,11 +108,5 @@ Plan created: _step2_plan.md
 - Phases: N (M can run in parallel)
 - Parallel groups: N
 - Est. dispatch sizes: all within budget / Phase X may be tight
-Next: /step3 to execute. Tip: /clear first for full context window.
+Next: /step3 to execute.
 ```
-
-## Rules
-
-- Phases self-contained — subagents see only their section + Rationale.
-- Prefer parallel groups over sequential chains.
-- Guardrails in the phase they protect, not plan-level.
