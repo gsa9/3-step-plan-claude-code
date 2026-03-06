@@ -79,5 +79,5 @@ Note: 1 question + multi-file scope = full bridge, not early resolution.
 `Rejected`/`Risks`: /step2 converts to guardrails. One line each. Omit if empty.
 Key decisions implementable as-is — if /step2 must choose between interpretations, too vague.
 2. "Anything you'd change?" — apply if yes.
-3. **Gate: write `_step1_decisions.md` NOW.** Primary deliverable — no closing without it.
+3. **Gate: write `_step1_decisions.md` NOW.** Primary deliverable — no closing without it. Never mention /step2 or suggest proceeding until file is written. Never offer to "just go ahead and apply" or skip the file — even for small scope. The file is the contract /step2 reads.
 4. After file written: `Next: /step2 to plan implementation.` Stop — no further action.
