@@ -79,5 +79,10 @@ Note: 1 question + multi-file scope = full bridge, not early resolution.
 `Rejected`/`Risks`: /step2 converts to guardrails. One line each. Omit if empty.
 Key decisions implementable as-is — if /step2 must choose between interpretations, too vague.
 2. "Anything you'd change?" — apply if yes.
-3. **Gate: write `_step1_decisions.md` NOW.** Primary deliverable — no closing without it. Never mention /step2 or suggest proceeding until file is written. Never offer to "just go ahead and apply" or skip the file — even for small scope. The file is the contract /step2 reads.
-4. After file written: `Next: /step2 to plan implementation.` Stop — no further action.
+3. **Pre-write audit.** Before writing, stress-test each file in Scope: "If /step2 reads ONLY `_step1_decisions.md` in a clean context (no conversation history), can it produce a correct plan without re-reading source code or guessing?" For each file in scope, verify the decisions file contains:
+   - Exact what changes (before→after for signatures, renames, column additions)
+   - Which code paths are affected and which are NOT (partition, not blanket)
+   - Line references when a file has multiple similar patterns
+   Fill gaps from exploration context silently — don't ask the user. This is the relay: knowledge in your context that doesn't make it into the file will be guessed or re-derived by /step2, both unreliable.
+4. **Gate: write `_step1_decisions.md` NOW.** Primary deliverable — no closing without it. Never mention /step2 or suggest proceeding until file is written. Never offer to "just go ahead and apply" or skip the file — even for small scope. The file is the contract /step2 reads.
+5. After file written: `Next: /step2 to plan implementation.` Stop — no further action.
