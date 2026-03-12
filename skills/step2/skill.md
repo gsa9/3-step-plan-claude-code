@@ -12,7 +12,7 @@ Create `_step2_plan.md` at repo root — sole input for `/step3` subagents with 
 
 Violation = skill failure.
 
-1. Read/Glob/Grep only. NO Task (loses context), NO EnterPlanMode/ExitPlanMode.
+1. Read/Glob/Grep + Agent (validation only). NO Task (loses context), NO EnterPlanMode/ExitPlanMode.
 2. Write `_step2_plan.md` AND delete `_step1_decisions.md` BEFORE closing remarks. Plan file = completion proof. No /step3 mention until both done.
 3. No early exit. After reading `_step1_decisions.md` + codebase, MUST produce `_step2_plan.md`.
 4. No code — output is `_step2_plan.md` only, never source file edits.
@@ -49,13 +49,9 @@ Design all phases mentally, then write complete `_step2_plan.md` in one Write ca
 
 ### 4. VALIDATE
 
-Before confirming, check every item:
-1. **Parallel maximization** — any dependency breakable by splitting?
-2. **No file collisions** — no two phases in same parallel group modify same file.
-3. **Subagent autonomy** — each phase executable with ONLY its section + Rationale + Reference files? If not, add missing context. ≤~150 dispatched lines.
-4. **Guardrail placement** — every _step1_decisions.md pitfall → guardrail in specific phase.
-5. **Completeness** — all _step1_decisions.md decisions reflected in at least one phase.
-Fix failures via Edit.
+Spawn Agent (general-purpose) with the enrichment prompt below. Read response.
+- `NO_GAPS` → proceed to step 5
+- Gap list → Edit `_step2_plan.md` to address each gap, then proceed to step 5
 
 ### 5. CLEANUP
 
@@ -109,4 +105,35 @@ Plan created: _step2_plan.md
 - Parallel groups: N
 - Est. dispatch sizes: all within budget / Phase X may be tight
 Next: /step3 to execute.
+```
+
+### Enrichment agent prompt
+
+```
+You are reviewing `_step2_plan.md` for completeness before handoff to /step3.
+
+/step3 dispatches each phase to isolated subagents with ONLY: the Rationale section + that phase's details. No conversation history, no other phases, no source code memory. Every gap = subagent guesswork.
+
+## Steps
+1. Read `_step2_plan.md`
+2. Read `_step1_decisions.md` (the decisions this plan must implement)
+3. For each Reference file in any phase, Read that source file
+4. Check every criterion below
+5. Return results
+
+## Checklist
+- [ ] **Parallel maximization**: Any sequential dependency that could be broken by splitting a phase?
+- [ ] **No file collisions**: No two phases in the same parallel group modify the same file?
+- [ ] **Subagent autonomy**: Each phase executable with ONLY its section + Rationale + Reference files? No cross-phase references like "the file from Phase 2" or "as described in Phase 1"?
+- [ ] **Guardrail placement**: Every pitfall, rejected alternative, and risk from `_step1_decisions.md` appears as a guardrail in the specific phase where drift could happen?
+- [ ] **Completeness**: Every decision from `_step1_decisions.md` reflected in at least one phase's tasks?
+- [ ] **Reference sufficiency**: Each Reference entry explains what to look at and why? Would a subagent need to search/grep for information not provided?
+- [ ] **Task specificity**: Each task concrete enough to implement without interpretation? No "update as needed" or "handle appropriately"?
+
+## Output format
+If everything passes: return exactly "NO_GAPS"
+Otherwise: return a numbered list of gaps, each with:
+- Which checklist criterion failed
+- Which phase (by number and title)
+- Specific suggested fix (not vague — write the actual text to add/change)
 ```

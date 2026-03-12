@@ -9,7 +9,7 @@ Structured Q&A → `_step1_decisions.md` at repo root → `/step2` consumes it.
 
 ## Gates
 
-1. Read/Glob/Grep only. NO Task (loses context), NO EnterPlanMode/ExitPlanMode (hijacks flow).
+1. Read/Glob/Grep + Agent (enrichment only). NO Task (loses context), NO EnterPlanMode/ExitPlanMode (hijacks flow).
 2. Write `_step1_decisions.md` (Write tool) BEFORE closing remarks. File = skill completion proof. No /step2 mention until file exists.
 3. One AskUserQuestion at a time. Each answer reshapes the next.
 4. No implementation — decisions only. Early resolution (single-file fix) is the sole exception.
@@ -79,10 +79,39 @@ Note: 1 question + multi-file scope = full bridge, not early resolution.
 `Rejected`/`Risks`: /step2 converts to guardrails. One line each. Omit if empty.
 Key decisions implementable as-is — if /step2 must choose between interpretations, too vague.
 2. "Anything you'd change?" — apply if yes.
-3. **Pre-write audit.** Before writing, stress-test each file in Scope: "If /step2 reads ONLY `_step1_decisions.md` in a clean context (no conversation history), can it produce a correct plan without re-reading source code or guessing?" For each file in scope, verify the decisions file contains:
-   - Exact what changes (before→after for signatures, renames, column additions)
-   - Which code paths are affected and which are NOT (partition, not blanket)
-   - Line references when a file has multiple similar patterns
-   Fill gaps from exploration context silently — don't ask the user. This is the relay: knowledge in your context that doesn't make it into the file will be guessed or re-derived by /step2, both unreliable.
-4. **Gate: write `_step1_decisions.md` NOW.** Primary deliverable — no closing without it. Never mention /step2 or suggest proceeding until file is written. Never offer to "just go ahead and apply" or skip the file — even for small scope. The file is the contract /step2 reads.
+3. **Gate: write `_step1_decisions.md` NOW.** Primary deliverable — no closing without it. Never mention /step2 or suggest proceeding until file is written. Never offer to "just go ahead and apply" or skip the file — even for small scope. The file is the contract /step2 reads.
+4. **Enrichment pass.** Spawn Agent (general-purpose) with the prompt below. Read response.
+   - `NO_GAPS` → proceed to step 5
+   - Gap list → Edit `_step1_decisions.md` to address each gap, then proceed to step 5
 5. After file written: `Next: /step2 to plan implementation.` Stop — no further action.
+
+### Enrichment agent prompt
+
+```
+You are reviewing `_step1_decisions.md` for completeness before handoff to /step2.
+
+/step2 will read ONLY this file in a fresh context with zero conversation history.
+Every gap in this file = guesswork or re-derivation by /step2, both unreliable.
+
+## Steps
+1. Read `_step1_decisions.md`
+2. For each file mentioned in Scope sections, Read that source file
+3. Check every criterion below
+4. Return results
+
+## Checklist
+- [ ] **Objective**: File has a top-level section explaining the broader WHY — not just per-decision Why, but the overarching goal and motivation
+- [ ] **Before-state**: Each decision documents what currently exists — current behavior, current code, what happens today
+- [ ] **Code specificity**: Each change point has line numbers, function names, or variable names from the source files
+- [ ] **Code snippets**: Non-trivial logic changes include pseudo-code or actual code showing the change (not just prose description)
+- [ ] **Cross-references**: Decisions that interact with each other say so explicitly (e.g., "this column is consumed by the agent prompt in Decision 3")
+- [ ] **Consumer completeness**: For each file in Scope — what changes, which code paths are affected and which are NOT, before→after for any signatures, schemas, or column additions
+- [ ] **Edge cases**: Empty inputs, missing data, error conditions mentioned where the logic branches
+
+## Output format
+If everything passes: return exactly "NO_GAPS"
+Otherwise: return a numbered list of gaps, each with:
+- Which checklist criterion failed
+- Where in the file (decision number or section)
+- Specific suggested addition (not vague — write the actual text to add)
+```

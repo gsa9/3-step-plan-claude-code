@@ -99,8 +99,9 @@ Software development is iterative — you discover what you need day by day, not
   │ • Explore   │         │ • Rationale │         │ • Checkpoint│
   │ • Interrogat│         │ • Phases    │         │ • Subagents │
   │ • Discovery │         │ • Guardrails│         │ • Parallel  │
-  │ • Bridge    │         │ • Validate  │         │ • All-or-   │
-  │             │         │             │         │   nothing   │
+  │ • Bridge    │         │ • Validate  │         │ • Validate  │
+  │ • Enrich    │         │   (agent)   │         │ • All-or-   │
+  │   (agent)   │         │             │         │   nothing   │
   └─────────────┘         └─────────────┘         └─────────────┘
         │                       │                       │
         ▼                       ▼                       ▼
@@ -115,6 +116,7 @@ Software development is iterative — you discover what you need day by day, not
   [1] During /step1        → Answer questions one at a time, go back if needed
   [2] After _step2_plan.md → Review phases, adjust before execution
   [3] During /step3        → Monitor progress, fail-fast resets to checkpoint
+  [4] After /step3 execute → Validation agent checks diff; user decides commit or reset
 
   WHY THREE STEPS?
   ────────────────
@@ -166,7 +168,7 @@ Interactive Q&A that converges on decisions. Reads your codebase, identifies dec
 - Discovers new questions as answers reshape the problem
 - Tracks decisions with a live status block after every answer
 
-**Output:** `_step1_decisions.md` at repo root (or inline summary for single-file fixes via early resolution).
+**Output:** `_step1_decisions.md` at repo root (or inline summary for single-file fixes via early resolution). An independent enrichment agent validates the file against a completeness checklist before handoff — gaps are fixed in-place.
 
 **Usage:**
 - `/step1` — asks what needs solving
@@ -180,7 +182,7 @@ Reads `_step1_decisions.md` and produces a self-contained execution plan. Design
 - Transforms decisions into phases with explicit file paths, guardrails, and dependencies
 - Maximizes parallelism — groups independent phases for concurrent execution
 - Keeps each phase within a context budget (~50-150 lines) so subagents stay focused
-- Validates before confirming: parallel maximization, no file collisions, subagent autonomy, guardrail placement, completeness
+- Validates via independent enrichment agent: parallel maximization, no file collisions, subagent autonomy, guardrail placement, completeness
 
 **Output:** `_step2_plan.md` at repo root. Deletes `_step1_decisions.md` after writing.
 
@@ -197,6 +199,7 @@ Dispatches phases from `_step2_plan.md` to subagents. The main thread is a light
 - Creates a git checkpoint before any work begins
 - Runs parallel groups concurrently, serial groups in order
 - Fail-fast: stops on first failure, recommends checkpoint reset
+- Post-execution validation: independent agent checks diff against plan, reports issues as soft gate (user decides commit or reset)
 - On success: deletes `_step2_plan.md`, commits and pushes (if remote configured)
 
 **Execution model:** All-or-nothing. A git checkpoint is created before any phase runs. If anything fails, reset to the checkpoint — no partial recovery, no resume.
@@ -397,6 +400,10 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
                             │  • Write        │
                             │    _step1_      │
                             │    decisions.md │
+                            │  • Enrichment   │◀──── independent agent
+                            │    agent checks │      validates completeness
+                            │    completeness │
+                            │  • Fix gaps     │
                             └─────────────────┘
 
   CONSTRAINTS
@@ -459,15 +466,16 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
                               └────────┬────────┘
                                        │
                               ┌────────▼────────┐
-                              │ 4. VALIDATE     │◀──── BEFORE CONFIRMING
+                              │ 4. VALIDATE     │◀──── ENRICHMENT AGENT
+                              │  Spawn agent:   │
                               │  • Max parallel?│
                               │  • No collisions│
                               │  • Subagent     │
-                              │    autonomy +   │
-                              │    budget ok?   │
+                              │    autonomy?    │
                               │  • Guardrails   │
                               │    placed?      │
                               │  • Completeness?│
+                              │  • Fix gaps     │
                               └────────┬────────┘
                                        │
                               ┌────────▼────────┐
@@ -511,8 +519,8 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
   Split only when part of a file creates
   a dependency other phases need first
 
-  VALIDATION (before writing)
-  ──────────────────────────
+  VALIDATION (enrichment agent)
+  ─────────────────────────────
   ✓ Could any dep be broken by splitting?
   ✓ No file collisions in parallel groups?
   ✓ Subagent autonomous + dispatch under ~150 lines?
@@ -590,6 +598,17 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
           │                  │                    │
           │         [continue until done]         │
           └───────────────────┬───────────────────┘
+                              │
+                    ┌─────────▼─────────┐
+                    │ 3b. VALIDATE      │
+                    │  • Diff checkpoint│
+                    │    → HEAD         │
+                    │  • Spawn agent    │◀─── independent validation
+                    │  • PASS → success │
+                    │  • Issues → ask   │◀─── SOFT GATE
+                    │    user: commit   │     user decides
+                    │    or reset?      │
+                    └─────────┬─────────┘
                               │
                     ┌─────────▼─────────┐
                     │ 4. SUCCESS        │
@@ -695,7 +714,7 @@ The three-step pipeline is designed around context window limits:
 
 1. **Fresh sessions** — each step starts clean, avoiding context bloat from prior exploration
 2. **Artifacts as bridges** — `_step1_decisions.md` and `_step2_plan.md` carry only what the next step needs
-3. **Direct reads in step1/step2** — both skills read files directly (Read/Glob/Grep), never via subagents. The main agent needs the code in its own context to interrogate decisions and design accurate phases
+3. **Direct reads in step1/step2** — both skills read files directly (Read/Glob/Grep), with independent enrichment agents for post-write validation. The main agent needs the code in its own context to interrogate decisions and design accurate phases
 4. **Parallel subagents in step3** — dispatches small, focused phases that fit within subagent context budgets (~50-150 lines per dispatch). Only step3 uses subagents — it's a dispatcher, not an explorer
 5. **No accumulated state** — the orchestrator in `/step3` tracks only phase numbers and status, not content
 6. **Rationale propagation** — the Rationale section in `_step2_plan.md` gives subagents awareness of the "why" and pitfalls without the orchestrator having to relay context from the analysis session

@@ -17,6 +17,7 @@ Violation = skill failure.
 2. Git checkpoint commit BEFORE dispatching any subagent. Store hash — without it, failure recovery impossible.
 3. On success: delete `_step2_plan.md` + final commit BEFORE reporting completion.
 4. NEVER execute tasks directly — delegate via Task tool (general-purpose).
+5. Agent tool allowed for post-run validation only — not for exploration, implementation, or any other purpose.
 
 ## Flow
 
@@ -69,6 +70,19 @@ Working directory: [absolute path]
 6. Return 1-2 sentence summary of what was done
 ```
 
+### 3b. VALIDATE
+
+After all phases succeed but BEFORE ON SUCCESS:
+
+1. Capture diff: `git diff <checkpoint-hash> HEAD`
+   - If output exceeds ~50KB, truncate and append note: `[DIFF TRUNCATED — validate what is visible]`
+2. Spawn Agent (general-purpose) with the validation prompt below, substituting `{diff}` with the captured diff output
+3. Read response:
+   - `PASS` → proceed to ON SUCCESS
+   - Issue list → report issues to user. Ask: **"Commit as-is, or reset to checkpoint?"**
+     - User says commit → proceed to ON SUCCESS
+     - User says reset → jump to ON FAILURE (use stored checkpoint hash)
+
 ### 4. ON SUCCESS
 
 - Delete `_step2_plan.md`
@@ -88,3 +102,34 @@ Restores all changes including `_step2_plan.md`.
 - **Not started:** Phases A, B, C
 
 Do NOT suggest partial recovery or fixing in place. Propose reset. User decides to keep partial changes.
+
+### Validation agent prompt
+
+```
+You are validating that /step3 subagents correctly executed a plan.
+
+## Inputs
+The plan is in `_step2_plan.md`. The diff of all changes follows below.
+
+## Steps
+1. Read `_step2_plan.md` — note every phase's Tasks, Guardrails, and Modifies lists
+2. Analyze the diff below against the plan
+3. Check every criterion
+4. Return results
+
+## Checklist
+- [ ] **Task completion**: Every task in every phase has a corresponding change in the diff
+- [ ] **Guardrail compliance**: No guardrail violations visible in the diff (patterns that were explicitly forbidden)
+- [ ] **Scope compliance**: No files modified outside any phase's Modifies list
+- [ ] **Consistency**: Changes across phases are consistent with each other (imports match exports, schemas match queries, etc.)
+
+## Diff
+{diff}
+
+## Output format
+If everything passes: return exactly "PASS"
+Otherwise: return a numbered list of issues, each with:
+- Which checklist criterion failed
+- Which phase (by number and title)
+- What specifically is wrong (quote diff lines if relevant)
+```
