@@ -263,6 +263,10 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
                             │  • Scope est:   │
                             │    "~N decisions│
                             │    to resolve"  │
+                            │  • If trivially │◀──── EARLY EXIT
+                            │    simple: skip │
+                            │    to inline    │
+                            │    summary      │
                             └────────┬────────┘
                                      │
                             ┌────────▼────────┐
@@ -296,44 +300,37 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
                                      │
                             ┌────────┴────────┐
                             │ DECISION TRACKER│◀──── after each answer
-                            │ 1. ✅ topic: X  │
-                            │ 2. ✅(auto): Y  │
-                            │ 3. 🆕 new topic │◀──── discovered mid-session
-                            │ 4. ➖ dropped   │◀──── mooted by answers
-                            │ 5. ⬜ next...   │
+                            │ 01. ✓ topic: X  │
+                            │ 02. ✓(auto): Y  │
+                            │ 03. new topic   │◀──── discovered mid-session
+                            │ 04. dropped     │◀──── mooted by answers
+                            │ 05. next...     │
                             │                 │
-                            │ (if >8, suggest │
+                            │ (if >9, suggest │
                             │  splitting)     │
                             └────────┬────────┘
                                      │
                             ┌────────▼────────┐
                             │  4. BRIDGE      │
-                            │                 │
-                            │  EARLY (trivially│     FULL (multi-
-                            │  simple task):  │     deliverable,
-                            │  • No _step1_   │     conventions, docs):
-                            │    decisions.md │
-                            │  • Summarize    │     ┌─────────────────────────────┐
-                            │    inline       │     │ ## Decision: [topic]        │
-                            │  • Proceed      │     │ **Approach:** JWT + middle  │
-                            │    directly     │     │ **Why:** fits existing...   │
-                            │                 │     │ **Rejected:** session..     │
-                            │  FULL:          │     │ **Risks:** token expiry..   │
-                            │  • "Anything to │     │ **Key decisions:**          │
-                            │    change?"     │     │ - decision 1, 2, 3...       │
-                            │  • Write        │     └─────────────────────────────┘
-                            │    _step1_      │
-                            │    decisions.md │
-                            │  • Enrichment   │◀──── independent agent
-                            │    agent checks │      validates completeness
-                            │    completeness │
+                            │                 │     ┌─────────────────────────────┐
+                            │  • Write        │     │ ## Constraints              │
+                            │    _step1_      │     │ - invariant — why           │
+                            │    decisions.md │     │                             │
+                            │  • Show tracker │     │ ## Decision: [topic]        │
+                            │  • "Anything to │     │ **Approach:** JWT + middle  │
+                            │    change?"     │     │ **Why:** fits existing...   │
+                            │  • Edit in-place│     │ **Rejected:** session..     │
+                            │    if changes   │     │ **Risks:** token expiry..   │
+                            │  • Enrichment   │◀──  │ **Key decisions:**          │
+                            │    agent checks │     │ - decision 1, 2, 3...       │
+                            │    completeness │     └─────────────────────────────┘
                             │  • Fix gaps     │
                             └─────────────────┘
 
   CODE-TASK AUTO-DETECTION
   ────────────────────────
   Git repo with source files or user describes code changes →
-  code-task: true in _step1_decisions.md. EXPLORE reads 5-10
+  code-task: true in _step1_decisions.md. EXPLORE reads
   relevant source files. Enrichment additionally checks code
   specifics (lines, functions, snippets, before→after).
 
@@ -341,8 +338,8 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
   ───────────
   ✗ No implementation     - thinking only, no changes
                             (only _step1_decisions.md)
-                            Exception: early resolution (trivially
-                            simple task) skips artifact and proceeds
+                            Trivially simple → early resolution
+                            in EXPLORE (no artifact, inline summary)
   ✓ Claude participates   - recommends, warns, challenges, validates
   ✓ Emergent discovery    - questions evolve from answers
   ✓ One question at a time- never batch, never dump a list
@@ -405,7 +402,7 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
                               ┌────────▼────────┐      │ ## Rationale              │
                               │ 5. CLEAN UP     │      │ **Approach:** JWT + ...   │
                               │  Del _step1_    │      │ **Patterns:** follow...   │
-                              │  decisions.md   │      │ **Non-goals:** no SSO...  │
+                              │  decisions.md   │      │ **Constraints:** no SSO.. │
                               └────────┬────────┘      │                           │
                                        │               │ | Phase | Name | Depends  │
                               ┌────────▼────────┐      │ |-------|------|--------- │
@@ -427,7 +424,7 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
   _step2_plan.md IS THE CONTEXT BRIDGE
   ─────────────────────────────
   Everything a fresh /step3 session needs is IN the plan:
-  ✓ Rationale    - approach, patterns to follow, what's out of scope
+  ✓ Rationale    - approach, patterns to follow, constraints
   ✓ Phases       - self-contained, no cross-phase references
   ✓ Inputs       - sources to read + what to look at in them
   ✓ Guardrails   - per-phase constraints from analysis pitfalls
@@ -530,7 +527,9 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
                     │  • Commit (+push) │
                     │  • Report summary │
                     └───────────────────┘
-                    Output: "Done."
+                    Output: ┌───────┐
+                            │ Done. │
+                            └───────┘
 
           ┌───────────────────────────────────────┐
           │ ON FAILURE: RECOVERY OPTIONS           │
@@ -555,7 +554,7 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
   ORCHESTRATOR          │ SUBAGENT
   ──────────────────────│──────────────────────────
   • Reads plan ONCE     │ • Gets ONLY its phase
-  • Tracks phase #s     │ • Gets Rationale (patterns, non-goals)
+  • Tracks phase #s     │ • Gets Rationale (patterns, constraints)
   • Never executes      │ • Gets dependency descriptions
   • Stays minimal       │ • Reads Inputs FIRST
   • 1 line per phase    │ • Respects Guardrails as hard constraints
@@ -590,7 +589,7 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
 **Approach:** Incremental migration — new types first, then client/server in parallel
 **Why:** Existing code already uses typed responses; adding new types is non-breaking
 **Patterns:** All types use Response<T> wrapper; endpoints follow RESTful naming in src/routes/
-**Non-goals:** No SSO integration, no breaking changes to public API surface
+**Constraints:** No SSO integration — out of scope for this migration. No breaking changes to public API surface — external consumers depend on current contract
 
 ## Phases Overview
 

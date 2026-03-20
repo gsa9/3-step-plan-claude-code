@@ -58,13 +58,13 @@ Dispatch template:
 
     # Instructions
     1. Read Inputs first. Understand context before producing anything.
-    2. Guardrails are hard constraints, not suggestions.
-    3. Stay within Outputs scope. Do not produce anything outside it.
+    2. Guardrails are hard constraints, not suggestions. Violating a Guardrail is a failure.
+    3. Produce only the listed Outputs. Do not create or modify anything outside them.
     4. On failure: stop immediately and return error details.
 
 Code-task override: if the plan contains `code-task: true`, replace instructions 1 and 3 with:
 1. Read Reference files first. Understand patterns before writing code.
-3. Stay within Modifies scope. Do not touch files outside it.
+3. Modify only the listed files. Do not touch files outside them.
 
 ### 4. ON SUCCESS
 
@@ -80,7 +80,11 @@ If `_step3_backup/` exists, delete it:
 
 If git repo: commit with `git add -A && git commit -m "run complete: [Goal]"`. If a remote exists (`git remote | head -1`), push.
 
-Output: `Done.`
+Output:
+
+    ┌───────┐
+    │ Done. │
+    └───────┘
 
 ### 5. ON FAILURE
 

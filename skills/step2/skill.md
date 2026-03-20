@@ -12,8 +12,8 @@ Create `_step2_plan.md` at repo root. This file is the sole input for /step3 sub
 
 1. Tools: Read, Glob, Grep only. Never use Agent, Task, or EnterPlanMode/ExitPlanMode.
 2. No code. The only output is `_step2_plan.md`.
-3. Write `_step2_plan.md` and delete `_step1_decisions.md` before showing the output box. Do not mention /step3 until both are done.
-4. Ask in plain text output. Never use AskUserQuestion.
+3. Do not mention /step3 until `_step2_plan.md` is written and `_step1_decisions.md` is deleted.
+4. Never use AskUserQuestion. Ask in plain text with numbered options, one question per message.
 
 ## Flow
 
@@ -21,7 +21,7 @@ Create `_step2_plan.md` at repo root. This file is the sole input for /step3 sub
 
 Read `_step1_decisions.md`.
 
-If found: transform it, do not copy it. Convert decisions into constraints placed in relevant phases. Convert pitfalls and rejected alternatives into guardrails phrased as "Do NOT use X because Y". Restate scope exclusions in each phase to prevent drift. If an `## Unresolved` section exists, ask the user whether to resolve or proceed.
+If found: transform it, do not copy it. Convert decisions into phase-level tasks. Convert pitfalls and rejected alternatives into guardrails phrased as "Do NOT use X because Y". Embed each `## Constraints` entry as a Guardrail in every phase that could violate it.
 
 If not found: use conversation context or ask the user.
 
@@ -55,6 +55,9 @@ When `_step1_decisions.md` contains `code-task: true`, apply these overrides:
 
 Use this structure for `_step2_plan.md`:
 
+    ---
+    code-task: true  # only if _step1_decisions.md has code-task: true
+    ---
     <!-- @plan: /step2 -->
     # [Goal Title]
 
@@ -65,7 +68,7 @@ Use this structure for `_step2_plan.md`:
     **Approach:** [chosen approach]
     **Why:** [key reasons from evidence]
     **Patterns:** [conventions subagents must follow]
-    **Non-goals:** [explicitly out of scope]
+    **Constraints:** [what must hold true and why — from `## Constraints` in decisions]
 
     ## Phases Overview
 
@@ -80,13 +83,15 @@ Use this structure for `_step2_plan.md`:
     **Outputs:** [exact deliverable names/paths]
     **Inputs:**
     - `source/or/reference` — [what to look at and why]
-    **Guardrails:** <!-- only if real drift risk -->
-    - [constraint from decisions/pitfalls]
+    **Guardrails:**
+    - [constraint from `## Constraints` that this phase could violate — with WHY]
+    - [pitfall or rejected alternative phrased as "Do NOT X because Y"]
     **Tasks:**
     - [ ] Concrete task 1
     - [ ] Concrete task 2
 
 Output:
+
 
     ┌──────────────┐
     │ Next: /step3 │
