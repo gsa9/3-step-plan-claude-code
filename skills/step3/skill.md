@@ -5,109 +5,95 @@ description: "ONLY when user explicitly types /step3. Never auto-trigger on exec
 
 # /step3
 
-Execute `_step2_plan.md` by dispatching phases to subagents via Agent tool. Main thread orchestrates only.
+Execute `_step2_plan.md` by dispatching phases to subagents via Agent tool. The main thread orchestrates only.
 
 ## Gates
 
-1. NO EnterPlanMode/ExitPlanMode — this skill IS the execution framework.
-2. Checkpoint BEFORE dispatching any subagent. Store recovery info — failure recovery depends on it.
-3. On success: delete `_step2_plan.md` (+ `_step3_backup/` if it exists) via platform-safe method + final commit (if git repo) BEFORE reporting completion.
-4. All implementation via Agent tool (general-purpose).
-5. Never use AskUserQuestion. Ask in plain text output.
+1. Never use EnterPlanMode/ExitPlanMode. This skill is the execution framework.
+2. Checkpoint before dispatching any subagent.
+3. All implementation happens via Agent tool (general-purpose).
+4. Ask in plain text output. Never use AskUserQuestion.
 
 ## Flow
 
-All-or-nothing execution. On failure, user decides recovery — no automatic partial recovery.
+All-or-nothing execution. On failure, the user decides recovery.
 
-Main thread is a lightweight dispatcher: read `_step2_plan.md` once, store only phase numbers/deps/groups/titles, dispatch subagents, report 1-line progress per phase.
+The main thread is a lightweight dispatcher: read `_step2_plan.md` once, store only phase numbers, dependencies, groups, and titles. Dispatch subagents and report one-line progress per phase.
 
 ### 1. CHECKPOINT
 
-Detect environment, then checkpoint accordingly:
+Detect the environment and create a checkpoint:
 
-**If git repo:**
-```
-git add -A && git commit -m "checkpoint before run"
-```
-Store hash: `git rev-parse HEAD`
-Do NOT push yet — push only on success (step 4).
+If git repo: run `git add -A && git commit -m "checkpoint before run"` and store the hash via `git rev-parse HEAD`. Do not push.
 
-**If modifying existing files (no git):**
-Copy all files referenced in the plan's Inputs/Outputs to `_step3_backup/`, preserving relative paths.
+If existing files but no git: copy all files listed in the plan's Inputs/Outputs to `_step3_backup/`, preserving relative paths.
 
-**If greenfield with no git:**
-Skip checkpoint — nothing to recover.
+If greenfield with no git: skip. Nothing to recover.
 
 ### 2. LOAD
 
-Read `_step2_plan.md`, verify `<!-- @plan: /step2 -->` marker. Parse overview table.
+Read `_step2_plan.md` and verify the `<!-- @plan: /step2 -->` marker is present. Parse the overview table.
 
 ### 3. EXECUTE LOOP
 
 While phases remain:
-1. Find ready phases (deps satisfied)
-2. Batch by parallel group — same group → ONE message, MULTIPLE Agent calls. Never mix groups.
-3. Dispatch per template below
-4. Any failure → ON FAILURE
-5. Log: `"Phase N: [title]"`
+1. Find ready phases whose dependencies are satisfied.
+2. Batch by parallel group. Same group dispatches in one message with multiple Agent calls. Never mix groups.
+3. Dispatch each phase using the template below.
+4. If any phase fails, go to ON FAILURE.
+5. Log each completion: "Phase N: [title]"
 
-**Dispatch template:**
-```markdown
-# Context
-Goal: [from plan Goal field]
-Rationale: [from plan Rationale section]
-Working directory: [absolute path]
+Dispatch template:
 
-# Dependencies
-[From Phases Overview. Omit if none.]
+    # Context
+    Goal: [from plan Goal field]
+    Rationale: [from plan Rationale section]
+    Working directory: [absolute path]
 
-# Your Assignment: Phase N
-[EXACT phase section from plan]
+    # Dependencies
+    [From Phases Overview. Omit section if none.]
 
-# Instructions
-1. Read Inputs FIRST — understand context before producing anything
-2. Guardrails are hard constraints, not suggestions
-3. Stay within Outputs scope — nothing outside it
-4. On failure: stop immediately, return error details
-```
+    # Your Assignment: Phase N
+    [EXACT phase section from plan]
+
+    # Instructions
+    1. Read Inputs first. Understand context before producing anything.
+    2. Guardrails are hard constraints, not suggestions.
+    3. Stay within Outputs scope. Do not produce anything outside it.
+    4. On failure: stop immediately and return error details.
+
+Code-task override: if the plan contains `code-task: true`, replace instructions 1 and 3 with:
+1. Read Reference files first. Understand patterns before writing code.
+3. Stay within Modifies scope. Do not touch files outside it.
 
 ### 4. ON SUCCESS
 
-```
-# 1. delete plan + backup via platform-safe method (Recycle Bin — never permanent delete)
-# On Windows:
-powershell -NoProfile -Command 'Add-Type -AssemblyName Microsoft.VisualBasic; [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteFile((Join-Path "WORKING_DIR" "_step2_plan.md"),"OnlyErrorDialogs","SendToRecycleBin")'
-# If _step3_backup/ exists:
-powershell -NoProfile -Command 'Add-Type -AssemblyName Microsoft.VisualBasic; [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteDirectory((Join-Path "WORKING_DIR" "_step3_backup"),"OnlyErrorDialogs","SendToRecycleBin")'
+Delete the plan file and backup via Recycle Bin (never permanent delete), then commit and push.
 
-# 2. if git repo: commit
-git add -A && git commit -m "run complete: [Goal]"
+On Windows, delete `_step2_plan.md`:
 
-# 3. push — only if git repo with remote
-git remote | head -1  # if exists: git push
-```
-Output:
-```
-Done.
-```
+    powershell -NoProfile -Command 'Add-Type -AssemblyName Microsoft.VisualBasic; [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteFile((Join-Path "WORKING_DIR" "_step2_plan.md"),"OnlyErrorDialogs","SendToRecycleBin")'
+
+If `_step3_backup/` exists, delete it:
+
+    powershell -NoProfile -Command 'Add-Type -AssemblyName Microsoft.VisualBasic; [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteDirectory((Join-Path "WORKING_DIR" "_step3_backup"),"OnlyErrorDialogs","SendToRecycleBin")'
+
+If git repo: commit with `git add -A && git commit -m "run complete: [Goal]"`. If a remote exists (`git remote | head -1`), push.
+
+Output: `Done.`
 
 ### 5. ON FAILURE
 
-Failed = Agent tool errors (crash, timeout) or subagent reports could not complete.
+A phase has failed when the Agent tool errors or the subagent reports it could not complete.
 
-```
-PLAN FAILED — RECOVERY OPTIONS
-Checkpoint: <hash or _step3_backup/>
-If git: Recovery: git reset --hard <hash>
-If backup: Recovery: restore from _step3_backup/
-- Failed: Phase N — [error]
-- Completed: Phases X, Y, Z
-- Not started: Phases A, B, C
-```
-Propose recovery only. User decides whether to keep partial changes.
+Display this to the user:
 
-### 6. CODE-TASK OVERRIDE
+    PLAN FAILED — RECOVERY OPTIONS
+    Checkpoint: [hash or _step3_backup/]
+    If git: Recovery: git reset --hard [hash]
+    If backup: Recovery: restore from _step3_backup/
+    - Failed: Phase N — [error]
+    - Completed: Phases X, Y, Z
+    - Not started: Phases A, B, C
 
-When the plan contains `code-task: true` in its context, override dispatch Instructions 1 and 3 with:
-1. Read Reference files FIRST — understand patterns before writing code
-3. Stay within Modifies scope — no files outside it
+Propose recovery only. The user decides.

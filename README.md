@@ -215,9 +215,13 @@ Unlike conservative prose-trimming approaches that preserve every item via inven
 
 **Key principles:**
 - One statement per concept — duplicates at the same level get merged
-- Direct and front-loaded — "Do X" beats "You should consider doing X"
+- Imperative voice — "Do X" beats "X should be considered"
+- Explicit conditionals — "If X, do Y" beats "X → Y" (arrow-notation is ambiguous to LLMs)
 - WHY > WHAT — the model infers WHAT from WHY
 - Evidence > authority — "X because Y" beats "CRITICAL: X"
+- Numbered lists over dense inline formats — LLMs track numbered items reliably
+- Indented blocks for templates — fenced code blocks cause literal reproduction
+- Separate instructions from user-facing output — optimize each for its audience
 - Remove self-evident rules — "Write valid Python" is noise
 
 **Usage:**
