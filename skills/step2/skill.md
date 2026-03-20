@@ -92,7 +92,4 @@ Use this structure for `_step2_plan.md`:
 
 Output:
 
-
-    ┌──────────────┐
-    │ Next: /step3 │
-    └──────────────┘
+    /step2 done ▰▰▱ next: /step3

@@ -527,9 +527,7 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
                     │  • Commit (+push) │
                     │  • Report summary │
                     └───────────────────┘
-                    Output: ┌───────┐
-                            │ Done. │
-                            └───────┘
+                    Output: /step3 done ▰▰▰
 
           ┌───────────────────────────────────────┐
           │ ON FAILURE: RECOVERY OPTIONS           │
@@ -569,7 +567,7 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
   ON SUCCESS → COMMIT & CLEAN
   ───────────────────────────
   _step2_plan.md deleted. Changes committed (pushed if remote).
-  Done.
+  /step3 done ▰▰▰
 ```
 
 </details>

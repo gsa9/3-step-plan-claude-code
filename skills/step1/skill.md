@@ -93,7 +93,4 @@ If NO_GAPS, go to step 5. If gaps found, edit the file to fill them, then go to 
 
 Step 5. Output this and stop:
 
-
-    ┌──────────────┐
-    │ Next: /step2 │
-    └──────────────┘
+    /step1 done ▰▱▱ next: /step2
