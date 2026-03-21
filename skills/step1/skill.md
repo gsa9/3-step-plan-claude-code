@@ -77,7 +77,7 @@ Step 1. Write `_step1_decisions.md`. If the task involves code, add `code-task: 
 
 Omit Rejected and Risks if empty.
 
-Step 2. Show the compact tracker in chat. Ask "Anything you'd change?"
+Step 2. Show the compact tracker in chat. Ask "Ok to continue?"
 
 Step 3. If user requests changes, edit `_step1_decisions.md` in-place.
 
@@ -93,4 +93,4 @@ If NO_GAPS, go to step 5. If gaps found, edit the file to fill them, then go to 
 
 Step 5. Output this and stop:
 
-    /step1 done ▰▱▱ next: /step2
+    ▰▰▰▰▰▰▰   ▱▱▱2▱▱▱   ▱▱▱▱▱▱▱

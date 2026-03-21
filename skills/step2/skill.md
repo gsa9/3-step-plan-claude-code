@@ -92,4 +92,4 @@ Use this structure for `_step2_plan.md`:
 
 Output:
 
-    /step2 done ▰▰▱ next: /step3
+    ▰▰▰▰▰▰▰   ▰▰▰▰▰▰▰   ▱▱▱3▱▱▱

@@ -82,7 +82,7 @@ If git repo: commit with `git add -A && git commit -m "run complete: [Goal]"`. I
 
 Output:
 
-    /step3 done ▰▰▰
+    ▰▰▰▰▰▰▰   ▰▰▰▰▰▰▰   ▰▰▰▰▰▰▰
 
 
 ### 5. ON FAILURE
