@@ -37,7 +37,7 @@ Exhaust questions before making any decisions. Use these dimensions as a checkli
 5. Prior art: tried before, why it worked or failed
 6. Dependencies: what else touches this, who else cares
 
-Ask one question per message. After each answer, branch into any new dimension before continuing. When all relevant dimensions are covered and no unanswered branches remain, say "Discovery complete — moving to decisions." and wait for user confirmation.
+Ask one question per message. After each answer, branch into any new dimension before continuing. When all relevant dimensions are covered and no unanswered branches remain, say "Discovery complete — moving to decisions." and proceed immediately to INTERROGATE.
 
 ### 3. INTERROGATE
 

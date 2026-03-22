@@ -211,18 +211,19 @@ Dispatches phases from `_step2_plan.md` to subagents. The main thread is a light
 
 LLM instruction compliance does not scale with length — beyond a threshold, more words means worse compliance. `/distill` optimizes instruction files (skill.md, CLAUDE.md, agent prompts) for maximum behavioral compliance per token. The principles are inlined in the skill itself.
 
-Unlike conservative prose-trimming approaches that preserve every item via inventory counting, `/distill` is willing to cut, restructure, and rewrite. It removes redundant and self-evident rules, merges duplicates, strips hedge words, and flattens unnecessary structure — while preserving WHY clauses (the highest-value content) and all behavioral rules that have no equivalent remaining.
+Unlike conservative prose-trimming approaches that preserve every item via inventory counting, `/distill` is willing to cut, restructure, and rewrite. It merges duplicates, strips hedge words, and flattens unnecessary structure — while preserving WHY clauses (the highest-value content), all behavioral rules that have no equivalent remaining, and specific edge cases that a generic rule doesn't demonstrably cover. A verify step checks each removal for behavioral equivalence.
 
 **Key principles:**
 - One statement per concept — duplicates at the same level get merged
 - Imperative voice — "Do X" beats "X should be considered"
 - Explicit conditionals — "If X, do Y" beats "X → Y" (arrow-notation is ambiguous to LLMs)
-- WHY > WHAT — the model infers WHAT from WHY
-- Evidence > authority — "X because Y" beats "CRITICAL: X"
+- WHY supplements WHAT — keep explicit actions, add WHY for compliance weight
+- Evidence > authority, but preserve emphasis — keep CRITICAL/IMPORTANT/MUST when the author added them for compliance
+- Generic over specific, but preserve edge cases — don't genericize away specific cases the generic rule doesn't cover
 - Numbered lists over dense inline formats — LLMs track numbered items reliably
 - Indented blocks for templates — fenced code blocks cause literal reproduction
 - Separate instructions from user-facing output — optimize each for its audience
-- Remove self-evident rules — "Write valid Python" is noise
+- Remove rules self-evident to the target LLM — assume the author needed it if it exists
 
 **Usage:**
 - `/distill <file-path>`
