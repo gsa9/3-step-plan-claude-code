@@ -211,7 +211,7 @@ Dispatches phases from `_step2_plan.md` to subagents. The main thread is a light
 
 LLM instruction compliance does not scale with length — beyond a threshold, more words means worse compliance. `/distill` optimizes instruction files (skill.md, CLAUDE.md, agent prompts) for maximum behavioral compliance per token. The principles are inlined in the skill itself.
 
-Unlike conservative prose-trimming approaches that preserve every item via inventory counting, `/distill` is willing to cut, restructure, and rewrite. It merges duplicates, strips hedge words, and flattens unnecessary structure — while preserving WHY clauses (the highest-value content), all behavioral rules that have no equivalent remaining, and specific edge cases that a generic rule doesn't demonstrably cover. A verify step checks each removal for behavioral equivalence.
+Unlike conservative prose-trimming approaches that preserve every item via inventory counting, `/distill` is willing to cut, restructure, and rewrite. It merges duplicates, strips hedge words, and flattens unnecessary structure — while preserving WHY clauses (the highest-value content), all behavioral rules that have no equivalent remaining, and specific edge cases that a generic rule doesn't demonstrably cover. A verify step checks each removal for behavioral equivalence. A timestamped backup is saved to `~/.claude/distill-backups/` before any changes. One file per invocation — refuses multiple paths or globs.
 
 **Key principles:**
 - One statement per concept — duplicates at the same level get merged
@@ -515,7 +515,7 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
           │ └────┬────┘           └────┬────┘     │
           │      │                     │          │
           │  ┌───┴─────────────────────┴────────┐  │
-          │  │ Log: "Phase N: [title]"          │  │
+          │  │ Log: "✓ N: [title]"              │  │
           │  └───────────────┬──────────────────┘  │
           │                  │                    │
           │         [continue until done]         │

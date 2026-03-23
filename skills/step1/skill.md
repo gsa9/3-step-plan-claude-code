@@ -63,6 +63,7 @@ Step 1. Write `_step1_decisions.md`. If the task involves code, add `code-task: 
 
     ---
     code-task: true  # only if code task
+    title: [descriptive title]
     ---
     ## Constraints
     - [invariant or exclusion] — [why it matters]
@@ -92,5 +93,7 @@ Step 4. Run enrichment. Spawn Agent (general-purpose) with this prompt:
 If NO_GAPS, go to step 5. If gaps found, edit the file to fill them, then go to step 5.
 
 Step 5. Output this and stop:
+
+    [title]
 
     ▰▰▰▰▰▰▰   ▱▱▱2▱▱▱   ▱▱▱▱▱▱▱

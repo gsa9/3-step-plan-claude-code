@@ -27,24 +27,41 @@ Optimize LLM instruction files (skill.md, CLAUDE.md, agent prompts) for behavior
 
 ### 1. TARGET
 
-Get the file path from the argument or ask for it. Read the file.
+Get the file path from the argument or ask for it. Read the file. The file content must be in context for both distillation and recovery reference.
 
-### 2. ANALYZE
+### 2. BACKUP
+
+1. Create `~/.claude/distill-backups/` if it doesn't exist.
+2. Get system timestamp via `powershell -NoProfile -Command 'Get-Date -Format "yyyyMMdd_HHmmss"'`.
+3. Save copy as `{filename}_{yyyyMMdd_HHmmss}.{ext}` in that folder.
+4. Briefly inform user: "Backup saved to ~/.claude/distill-backups/{backup-filename}"
+5. If backup fails, warn and ask whether to proceed without backup.
+
+### 3. ANALYZE
 
 Check the file against each principle. Cross-check for redundancy across distant sections (intros restating gates, flow steps echoing other flow steps). Identify which content is LLM instruction versus user-facing output.
 
-### 3. DISTILL
+### 4. DISTILL
 
-Apply all changes. Write the distilled version. Report before/after line counts and what was merged, removed, or restructured.
+Apply all changes. Write the distilled version. Report using this template:
 
-### 4. VERIFY
+    | Metric | Before | After |
+    |--------|--------|-------|
+    | Lines  | N      | N     |
+    | Sections | N    | N     |
+    | Rules/Principles | N | N |
+
+    **Changed:** [one-line summary of what was merged, removed, or restructured]
+
+### 5. VERIFY
 
 For each removed or shortened rule, confirm the remaining text would produce identical behavior in the same scenarios. If a rule was removed because it seemed self-evident or covered by a generic rule, mentally test: "Would an LLM reading only the distilled version do X in scenario Y?" If uncertain, restore the rule.
 
 Constraints:
-1. Never remove a behavioral rule that has no equivalent remaining.
-2. Compress expression, not meaning. Preserve output format templates and frontmatter.
-3. Embedded agent prompts are instructions — distill them like any other prose.
-4. Never compress by adding forward references ("see section X"). Inline or cut, do not point.
-5. WHY clauses are high-value. Keep them even when shortening the WHAT around them.
-6. If uncertain whether removal is safe, keep the rule.
+1. One file per invocation. If the argument contains multiple paths, globs, or the user asks to distill more than one file, refuse immediately and explain: one file at a time.
+2. Never remove a behavioral rule that has no equivalent remaining.
+3. Compress expression, not meaning. Preserve output format templates and frontmatter.
+4. Embedded agent prompts are instructions — distill them like any other prose.
+5. Never compress by adding forward references ("see section X"). Inline or cut, do not point.
+6. WHY clauses are high-value. Keep them even when shortening the WHAT around them.
+7. If uncertain whether removal is safe, keep the rule.

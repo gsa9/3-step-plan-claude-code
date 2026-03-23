@@ -57,6 +57,7 @@ Use this structure for `_step2_plan.md`:
 
     ---
     code-task: true  # only if _step1_decisions.md has code-task: true
+    title: [from _step1_decisions.md frontmatter]
     ---
     <!-- @plan: /step2 -->
     # [Goal Title]
@@ -91,5 +92,13 @@ Use this structure for `_step2_plan.md`:
     - [ ] Concrete task 2
 
 Output:
+
+    [title]
+
+    | # | Deliverable |
+    |---|-------------|
+    | 1 | [Name from Phases Overview row 1] |
+    | 2 | [Name from Phases Overview row 2] |
+    | ... | ... |
 
     ▰▰▰▰▰▰▰   ▰▰▰▰▰▰▰   ▱▱▱3▱▱▱

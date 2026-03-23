@@ -41,7 +41,7 @@ While phases remain:
 2. Batch by parallel group. Same group dispatches in one message with multiple Agent calls. Never mix groups.
 3. Dispatch each phase using the template below.
 4. If any phase fails, go to ON FAILURE.
-5. Log each completion: "Phase N: [title]"
+5. Log each completion: "✓ N: [title]"
 
 Dispatch template:
 
@@ -68,6 +68,8 @@ Code-task override: if the plan contains `code-task: true`, replace instructions
 
 ### 4. ON SUCCESS
 
+Do not output anything during these operations.
+
 Delete the plan file and backup via Recycle Bin (never permanent delete), then commit and push.
 
 On Windows, delete `_step2_plan.md`:
@@ -80,7 +82,9 @@ If `_step3_backup/` exists, delete it:
 
 If git repo: commit with `git add -A && git commit -m "run complete: [Goal]"`. If a remote exists (`git remote | head -1`), push.
 
-Output:
+Output (read `title:` from `_step2_plan.md` YAML frontmatter before deleting):
+
+    [title]
 
     ▰▰▰▰▰▰▰   ▰▰▰▰▰▰▰   ▰▰▰▰▰▰▰
 
