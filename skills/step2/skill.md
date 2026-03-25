@@ -41,7 +41,15 @@ Phase design rules:
 
 ### 4. CLEANUP
 
-Delete `_step1_decisions.md` via platform-safe method (Recycle Bin on Windows, Trash on macOS/Linux). Never permanently delete. Verify the file is gone. Show the output box. Stop.
+Do not output anything during these operations.
+
+Delete `_step1_decisions.md` via Recycle Bin (never permanent delete).
+
+On Windows, delete `_step1_decisions.md`:
+
+    powershell -NoProfile -Command 'Add-Type -AssemblyName Microsoft.VisualBasic; [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteFile((Join-Path "WORKING_DIR" "_step1_decisions.md"),"OnlyErrorDialogs","SendToRecycleBin")'
+
+Verify the file is gone. Show the output box. Stop.
 
 ## Code-Task Overrides
 
@@ -94,11 +102,5 @@ Use this structure for `_step2_plan.md`:
 Output:
 
     [title]
-
-    | # | Deliverable |
-    |---|-------------|
-    | 1 | [Name from Phases Overview row 1] |
-    | 2 | [Name from Phases Overview row 2] |
-    | ... | ... |
 
     ▰▰▰▰▰▰▰   ▰▰▰▰▰▰▰   ▱▱▱3▱▱▱

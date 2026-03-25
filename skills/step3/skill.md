@@ -24,7 +24,7 @@ The main thread is a lightweight dispatcher: read `_step2_plan.md` once, store o
 
 Detect the environment and create a checkpoint:
 
-If git repo: run `git add -A && git commit -m "checkpoint before run"` and store the hash via `git rev-parse HEAD`. Do not push.
+If git repo: run `git status --porcelain` — if output is non-empty, abort with: "Working tree has uncommitted changes — commit or stash before running /step3." If clean, run `git rev-parse HEAD` to store the checkpoint hash. If `rev-parse` fails (empty repo with no commits), treat as greenfield — skip checkpoint.
 
 If existing files but no git: copy all files listed in the plan's Inputs/Outputs to `_step3_backup/`, preserving relative paths.
 

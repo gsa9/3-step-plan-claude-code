@@ -196,7 +196,7 @@ Reads `_step1_decisions.md` and produces a self-contained execution plan. Design
 
 Dispatches phases from `_step2_plan.md` to subagents. The main thread is a lightweight orchestrator — it never executes tasks directly.
 
-- Creates a checkpoint before any work begins (git commit, file backup, or skip for greenfield)
+- Creates a checkpoint before any work begins (requires clean working tree, file backup, or skip for greenfield)
 - Runs parallel groups concurrently, serial groups in order
 - Fail-fast: stops on first failure, presents recovery options
 - All-or-nothing: on failure, user decides whether to recover or keep partial changes
@@ -301,12 +301,12 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
                                      │
                             ┌────────┴────────┐
                             │ DECISION TRACKER│◀──── after each answer
-                            │ 01. ✓ topic: X  │
-                            │ 02. ✓(auto): Y  │
-                            │ 03. new topic   │◀──── discovered mid-session
-                            │ 04. dropped     │◀──── mooted by answers
-                            │ 05. next...     │
+                            │ `topic A` ✓     │
+                            │ `topic B` ✓ auto│
+                            │ `topic C` (next)│◀──── discovered mid-session
+                            │ `topic D` drop  │◀──── mooted by answers
                             │                 │
+                            │ · bullets, not -│
                             │ (if >9, suggest │
                             │  splitting)     │
                             └────────┬────────┘
@@ -469,8 +469,8 @@ A streamlined git commit and push workflow. `/gc` stages all changes, generates 
                     │ 1. CHECKPOINT     │
                     │                   │
                     │  Git repo:        │
-                    │   • git add -A    │◀─── SAFETY NET
-                    │     commit        │
+                    │   • Require clean │◀─── SAFETY NET
+                    │     working tree  │
                     │   • Store hash    │
                     │                   │
                     │  Existing files   │

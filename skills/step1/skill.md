@@ -15,6 +15,27 @@ Produce `_step1_decisions.md` at repo root. /step2 consumes only that file.
 4. Specify exact deliverables, formats, criteria. Not "improve the process". Instead "add checklist with 5 gate criteria to review template".
 5. Do not mention /step2 until `_step1_decisions.md` is written and enrichment is complete.
 
+## Chat Output Style
+
+Emphasis hierarchy (terminal renders bold identically to regular text):
+1. Sentence rhythm — place the key point at the end of a short declarative sentence for primary emphasis.
+2. `monospace` — reserved for specific terms, names, file paths, and concepts that need visual pop. Use sparingly.
+3. Blockquotes — for isolated callouts that interrupt the flow to flag a constraint or warning.
+4. *Italic* — softer inline stress for conditional or secondary emphasis.
+Never use `**bold**` markup anywhere in chat output.
+
+Format all chat output as title-paragraph blocks: a backtick-wrapped title with optional parenthetical status on the same line, followed by bulleted prose sentences (one idea per bullet, full sentences). Use `·` (middle dot) as the bullet character instead of `-`. Separate blocks with blank lines. Example:
+
+`Caching strategy` (decided)
+· The app will use a write-through cache backed by `Redis`.
+· TTL is 300 seconds, chosen to balance freshness against DB load.
+
+> This rules out lazy invalidation — the write-through guarantee is a hard constraint.
+
+· *If latency becomes an issue*, we revisit with a read-aside layer.
+
+General prose style: write full sentences in `·`-bulleted paragraphs. Explain reasoning first, then land the point in a short declarative sentence. Frame questions as flowing prose, not bare numbered lists. Use transition sentences between dimensions to show how they connect.
+
 ## Flow
 
 If prior context exists, use it as the topic. Otherwise ask "What needs solving?"
@@ -23,7 +44,10 @@ If prior context exists, use it as the topic. Otherwise ask "What needs solving?
 
 Read files, conversation history, references. Identify decision points. If in a git repo with source files, read relevant files to ground decisions.
 
-Tell the user: "~N decisions to work through after discovery."
+Show the estimate as a title-paragraph block:
+
+`Discovery` (starting)
+· There are roughly N decisions to work through once discovery is complete.
 
 If the task is trivially simple, skip to early resolution: summarize inline and ask "Ready to proceed?" Do not write `_step1_decisions.md`. One question with multi-faceted scope requires the full flow.
 
@@ -37,25 +61,40 @@ Exhaust questions before making any decisions. Use these dimensions as a checkli
 5. Prior art: tried before, why it worked or failed
 6. Dependencies: what else touches this, who else cares
 
-Ask one question per message. After each answer, branch into any new dimension before continuing. When all relevant dimensions are covered and no unanswered branches remain, say "Discovery complete — moving to decisions." and proceed immediately to INTERROGATE.
+When presenting options during discovery, if you can reason about which is stronger, mark it `(Recommended)` with a rationale sentence — the same convention used in INTERROGATE. This saves the user from choosing blind when the evidence already points somewhere.
+
+Ask one question per message. After each answer, show a title-paragraph dashboard block for the dimension just covered:
+
+`[Dimension name]` (covered)
+· [Prose sentence summarizing what was learned.]
+
+Use a transition sentence before moving to the next dimension to show how it connects to what was just discussed.
+
+After each answer, branch into any new dimension before continuing. When all relevant dimensions are covered and no unanswered branches remain, say "Discovery complete — moving to decisions." and proceed immediately to INTERROGATE.
 
 ### 3. INTERROGATE
 
-When evidence makes one option overwhelming, auto-decide it:
+When evidence makes one option overwhelming, auto-decide it and present using the title-paragraph format:
 
-    ### Auto-decided (review before we continue)
-    01. ✓ (auto) [topic]: [answer] — [rationale]
+`[topic]` ✓ auto
+· [Prose sentence explaining the decision and its rationale.]
 
-Ask "Revisit any, or move on?" If user flags one, demote to regular question.
+Group all auto-decisions together, then ask "Revisit any, or move on?" If user flags one, demote to regular question.
 
-For each remaining question, list options best-first. Mark the clearest `(Recommended)` with rationale. After each answer, check: new decisions spawned? any killed? conflicts? Push back on risky choices. If decisions exceed 9, suggest splitting.
+For each remaining question, present options as prose paragraphs with full sentences explaining trade-offs. Mark the strongest option `(Recommended)` inline with its rationale. After each answer, check: new decisions spawned? any killed? conflicts? Push back on risky choices. If decisions exceed 9, suggest splitting.
 
-Maintain a tracker after each answer:
+Maintain a tracker after each answer using the title-paragraph format:
 
-    ### Decisions (N decided, ~M remaining)
-    01. ✓ [topic]: [answer] — [why]
-    02. ✓ (auto) [topic]: [answer] — [rationale]
-    03. [next]
+`Decisions` (N decided, ~M remaining)
+
+`[topic]` ✓
+· [Prose sentence explaining the decision.]
+
+`[topic]` ✓ auto
+· [Prose sentence explaining the auto-decision and rationale.]
+
+`[next topic]` (next)
+· [To be decided.]
 
 ### 4. BRIDGE
 
@@ -78,7 +117,7 @@ Step 1. Write `_step1_decisions.md`. If the task involves code, add `code-task: 
 
 Omit Rejected and Risks if empty.
 
-Step 2. Show the compact tracker in chat. Ask "Ok to continue?"
+Step 2. Show the title-paragraph decision tracker in chat. If all decisions were already confirmed during INTERROGATE, proceed directly to enrichment — no confirmation needed. If new decisions emerged during BRIDGE (e.g. from writing the file or filling gaps), present them as full INTERROGATE-style questions with options and trade-offs before continuing.
 
 Step 3. If user requests changes, edit `_step1_decisions.md` in-place.
 
